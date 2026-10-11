@@ -22,7 +22,7 @@ export async function getStaticProps({ params: { subpage } }) {
   if (!blockMap) return { notFound: true, revalidate: BLOG.notionRevalidateSeconds }
   const title = Object.values(page.properties).find(property => property.type === 'title')
   return {
-    props: { post: { id: page.id, title: textValue(title?.title), type: ['Page'], fullWidth: false }, blockMap },
+    props: { post: { id: page.id, title: textValue(title?.title), type: 'Page', fullWidth: false }, blockMap },
     revalidate: BLOG.notionRevalidateSeconds
   }
 }

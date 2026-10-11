@@ -27,10 +27,10 @@ export default function Content (props) {
       <h1 className='font-bold text-3xl text-black dark:text-white'>
         {pageTitle ? pageTitle : frontMatter.title}
       </h1>
-      {frontMatter.type[0] !== 'Page' && (
+      {frontMatter.type !== 'Page' && (
         <nav className='flex mt-5 mb-10 items-start text-gray-500 dark:text-gray-400'>
           <div className='mr-2 mb-4 md:ml-0'>
-            <FormattedDate date={frontMatter.date} />
+            <FormattedDate date={frontMatter.publishedAt} />
           </div>
           {frontMatter.tags && (
             <div className='flex flex-nowrap max-w-full overflow-x-auto article-tags'>

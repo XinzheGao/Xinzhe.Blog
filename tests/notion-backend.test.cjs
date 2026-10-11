@@ -62,7 +62,10 @@ test('official API pagination and visibility prevent publishing drafts or unrela
   const page = (id, status) => ({ object: 'page', id, parent: { type: 'data_source_id', data_source_id: root }, created_time: '2025-01-01T00:00:00Z', last_edited_time: '2025-01-01T00:00:00Z', properties: {
     title: { type: 'title', title: [{ plain_text: 'Article' }] },
     slug: { type: 'rich_text', rich_text: [{ plain_text: id }] },
-    status: { type: 'select', select: { name: status } }
+    publicationStatus: { type: 'select', select: { name: status } },
+    type: { type: 'select', select: { name: 'Post' } },
+    language: { type: 'select', select: { name: 'zh' } },
+    publishedAt: { type: 'date', date: { start: '2025-01-01' } }
   } })
   global.fetch = async (url, options) => {
     seen.push(url)

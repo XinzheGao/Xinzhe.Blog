@@ -2,12 +2,22 @@ import { TranslateIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState, useRef, useEffect } from 'react'
-import { useEffect as useIsomorphicLayoutEffect } from 'react'
 
 const LangSwitcher = ({ showLangMenu, setShowLangMenu, showMenu, setShowMenu }) => {
   const router = useRouter()
   const { locale, asPath, pathname, query } = router
   const menuRef = useRef(null)
+  const [versions, setVersions] = useState([])
+  useEffect(() => {
+    if (!showLangMenu || !query.slug) return
+    const controller = new AbortController()
+    setVersions([])
+    fetch(`/api/content-languages?slug=${encodeURIComponent(query.slug)}&language=${locale}`, { signal: controller.signal })
+      .then(response => response.ok ? response.json() : { versions: [] })
+      .then(data => setVersions(data.versions || []))
+      .catch(() => {})
+    return () => controller.abort()
+  }, [showLangMenu, query.slug, locale])
 
   const languages = [
     { code: 'zh', name: '中文' },
@@ -58,6 +68,8 @@ const LangSwitcher = ({ showLangMenu, setShowLangMenu, showMenu, setShowMenu }) 
           <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="language-menu">
             {languages.map((lang) => {
               if (query.slug) {
+                const target = versions.find(version => version.language === lang.code)
+                if (!target) return null
                 return (
                   <div
                     key={lang.code}
@@ -69,11 +81,7 @@ const LangSwitcher = ({ showLangMenu, setShowLangMenu, showMenu, setShowMenu }) 
                     role="menuitem"
                     onClick={() => {
                       setShowLangMenu(false)
-                      let baseSlug = query.slug.replace(/(-en|-ja)$/,'')
-                      let targetSlug = baseSlug
-                      if (lang.code === 'en') targetSlug = `${baseSlug}-en`
-                      else if (lang.code === 'ja') targetSlug = `${baseSlug}-ja`
-                      router.push(`/${targetSlug}`, `/${targetSlug}`, { locale: lang.code })
+                      router.push(`/${target.slug}`, `/${target.slug}`, { locale: lang.code })
                     }}
                   >
                     {lang.name}

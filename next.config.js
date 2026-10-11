@@ -24,6 +24,12 @@ module.exports = {
       }
     ]
   },
+  async redirects() {
+    return [
+      { source: '/newsletter', destination: '/musings', permanent: true },
+      { source: '/book', destination: '/books', permanent: true }
+    ]
+  },
   async rewrites() {
     return []
   }
