@@ -1,5 +1,6 @@
 import Layout from '@/layouts/layout'
 import { getContents, getPostBlocks } from '@/lib/notion'
+import { resolveContentRoute } from '@/lib/notion/contentSchema'
 import BLOG from '@/blog.config'
 import { useRouter } from 'next/router'
 import Loading from '@/components/Loading'
@@ -30,15 +31,10 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params: { slug }, locale }) {
   const contents = await getContents()
-  const post = contents.find(content => content.slug === slug && content.language === locale)
-  if (!post) {
-    const alias = contents.find(content => content.legacySlug === slug && content.slug !== slug)
-    if (alias) return { redirect: {
-      destination: `${alias.language === 'zh' ? '' : '/' + alias.language}/${alias.slug}`,
-      permanent: true
-    } }
-    return { notFound: true, revalidate: BLOG.notionRevalidateSeconds }
-  }
+  const route = resolveContentRoute(contents, slug, locale)
+  if (!route) return { notFound: true, revalidate: BLOG.notionRevalidateSeconds }
+  if (route.redirect) return { redirect: route.redirect }
+  const post = route.content
   const blockMap = await getPostBlocks(post.id)
   if (!blockMap) return { notFound: true, revalidate: BLOG.notionRevalidateSeconds }
   return { props: { post, blockMap }, revalidate: BLOG.notionRevalidateSeconds }

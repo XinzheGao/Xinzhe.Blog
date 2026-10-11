@@ -70,15 +70,15 @@ pnpm install
 | 字段 | 类型 | 用途 / 示例 |
 | --- | --- | --- |
 | `title` | Title | 文章或项目名称 |
-| `slug` | Text | 页面路径，例如 `my-first-post` |
-| `status` | Select | 设置为 `Published` 才会展示 |
-| `type` | Select | `Post`、`Projects`、`Notes`、`Book`、`Newsletter` 或 `Hidden` |
-| `lang` | Select | `zh`、`en` 或 `ja`，用于对应语言的列表筛选 |
-| `date` | Date | 发布日期；未填写时使用页面创建时间，未来日期暂不展示 |
+| `legacySlug` | Text，可选 | 旧地址别名，仅用于兼容历史链接 |
+| `publicationStatus` | Select | 设置为 `Published` 才会展示 |
+| `type` | Select | `Post`、`Note`、`Project`、`Musings`、`Book`、`Page` 或 `SectionIntro` |
+| `language` | Select | `zh`、`en` 或 `ja`，用于对应语言的列表筛选 |
+| `publishedAt` | Date | 手选发布日期；未填写或未来日期暂不展示 |
 | `summary` | Text | 文章摘要 |
 | `tags` | Multi-select | 内容标签 |
 
-首页介绍也来自该数据库：准备一条 `type = Hidden`、`status = Published`、`slug = index` 的页面作为默认介绍。英文和日文版本可分别使用 `index-en`、`index-ja`。其他栏目的介绍可参考 `pages/` 下对应页面的 slug 约定。
+首页和栏目介绍也来自该数据库：设置 `type = SectionIntro`，通过 `section`（例如 `home`、`posts`、`notes`）和 `language` 定位，不需要 slug。发布需设置 `publicationStatus = Published` 和已到达的 `publishedAt`。
 
 ### 3. 配置环境变量与站点信息
 
@@ -103,7 +103,7 @@ NOTION_PAGE_ID=your_notion_database_page_id
 
 正文转换保留现有 `react-notion-x` 渲染器，支持文本、标题、列表、代码、图片、公式、引用、Callout、折叠、待办、列布局、简单表格和媒体。官方 API 不返回 Notion 的 full-width 显示设置，默认使用普通宽度。尚未支持的块（例如嵌入数据库）会使刷新失败，避免静默丢失内容。
 
-文章按 `lang` 选择语言，包括不同语言共用同一个 `slug` 的情况。首页和栏目介绍仍沿用 `index[-en/-ja]`、`notes[-en/-ja]` 等现有命名。本次不改变三份译文的编辑方式。
+文章按 `language` 选择语言，并使用 `source` 关联译文和原文。文章路径根据各自 Notion 页面 ID 自动生成，首页和栏目介绍通过 `section` 定位。
 
 运行后端回归检查：`node --test tests/notion-backend.test.cjs`。
 
@@ -154,6 +154,12 @@ pnpm start
 ```
 
 ## 开发与维护
+
+### 自动生成文章路径
+
+所有正文内容（`Post`、`Page`、`Note`、`Project`、`Musings`、`Book`）都使用 Notion 页面 ID 自动生成路径，例如 `post-abcdef1234567890abcdef1234567890`；前缀对应内容类型的小写名称。Notion 不再需要 `slug` 属性，可以在新版部署后删除。修改标题不会改变路径，同名文章有不同路径；修改内容类型会改变路径前缀。发布仍需满足 `publicationStatus = Published` 和 `publishedAt` 已到达的条件。
+
+译文使用各自页面 ID 生成路径，并通过 `source` 关联原文。迁移前的地址已备份在 `lib/notion/legacySlugs.json`，旧链接会永久跳转到对应语言的新地址，即使删除 Notion 的 `slug` 属性也能继续跳转。可选的 `legacySlug` 用于追加历史别名；新文章不需要填写它。必须先部署新代码、验证新旧链接，再删除主库的 `slug` 列，避免旧版线上代码因缺少 slug 而隐藏内容。
 
 本仓库围绕个人内容发布与项目展示进行定制，维护内容包括页面与组件调整、Notion 数据组织、多语言内容筛选、请求缓存与重试，以及 Vercel 部署和站点配置。
 
