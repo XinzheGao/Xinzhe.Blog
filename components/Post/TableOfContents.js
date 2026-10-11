@@ -1,18 +1,13 @@
 import PropTypes from 'prop-types'
 import { getPageTableOfContents } from 'notion-utils'
+import { getTableOfContentsPage } from '@/lib/notion/getTableOfContentsPage'
 import Link from 'next/link'
 import { ChevronLeftIcon } from '@heroicons/react/outline'
 import BLOG from '@/blog.config'
 
 export default function TableOfContents ({ blockMap, frontMatter, pageTitle }) {
-  let collectionId, page
-  if (pageTitle) {
-    collectionId = Object.keys(blockMap.block)[0]
-    page = blockMap.block[collectionId].value
-  } else {
-    collectionId = Object.keys(blockMap.collection)[0]
-    page = Object.values(blockMap.block).find(block => block.value.parent_id === collectionId).value
-  }
+  const page = getTableOfContentsPage(blockMap)
+  if (!page) return null
   const nodes = getPageTableOfContents(page, blockMap)
   if (!nodes.length) return null
 

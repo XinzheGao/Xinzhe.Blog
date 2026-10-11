@@ -9,14 +9,11 @@ const Aside = ({ pageTitle, blockMap, frontMatter }) => {
   const [showScrollElement, setShowScrollElement] = useState(false)
 
   useEffect(() => {
-    window.addEventListener('scroll', () => {
-      if (window.pageYOffset > 400) {
-        setShowScrollElement(true)
-      } else {
-        setShowScrollElement(false)
-      }
-    })
-  }, [frontMatter, pageTitle])
+    const handleScroll = () => setShowScrollElement(window.pageYOffset > 400)
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
   return (
     <>
       <aside className='hidden sticky md:flex md:flex-col md:items-center md:self-start md:ml-8 md:inset-y-1/2'>
