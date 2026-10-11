@@ -1,6 +1,7 @@
 const { test } = require('node:test')
 const assert = require('node:assert/strict')
 const { contentMetadata, isPublishedContent, filterContents, languageVersions } = require('../lib/notion/contentSchema')
+const { formatContentDate } = require('../lib/contentDate')
 const select = name => ({ type: 'select', select: { name } })
 const text = value => ({ type: 'rich_text', rich_text: [{ plain_text: value }] })
 const page = (id, language, source = []) => ({
@@ -42,4 +43,17 @@ test('section introductions use section and language without requiring a public 
   assert.equal(isPublishedContent(intro), true)
   assert.equal(filterContents([intro]).length, 0)
   assert.equal(filterContents([intro], { type: 'SectionIntro', language: 'ja' }).length, 1)
+})
+
+test('legacy whitespace in slugs does not break language lookup', () => {
+  const raw = page('book', 'en')
+  raw.properties.slug = text(' Book-01 ')
+  assert.equal(contentMetadata(raw).slug, 'Book-01')
+})
+
+test('date-only publication dates retain the chosen day across server timezones', () => {
+  const timestamp = contentMetadata(page('book', 'en')).publishedAt
+  assert.equal(formatContentDate(timestamp, 'en', 'Asia/Tokyo'), 'Jan 1, 2025')
+  assert.equal(formatContentDate(timestamp, 'ja', 'Asia/Tokyo'), '2025年1月1日')
+  assert.equal(formatContentDate(timestamp, 'zh', 'Asia/Tokyo'), '2025年1月1日')
 })
