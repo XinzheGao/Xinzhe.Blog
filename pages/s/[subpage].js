@@ -14,8 +14,9 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params: { subpage } }) {
-  if (!/^[0-9a-f-]{32,36}$/i.test(subpage)) return { notFound: true }
-  const page = await getPublishedPage(uuid(subpage))
+  let id
+  try { id = uuid(subpage) } catch { return { notFound: true } }
+  const page = await getPublishedPage(id)
   if (!page) return { notFound: true, revalidate: BLOG.notionRevalidateSeconds }
   const blockMap = await getPostBlocks(page.id)
   if (!blockMap) return { notFound: true, revalidate: BLOG.notionRevalidateSeconds }

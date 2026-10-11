@@ -1,3 +1,8 @@
+const notionRevalidateSeconds = Number(process.env.NOTION_REVALIDATE_SECONDS || 60)
+if (!Number.isInteger(notionRevalidateSeconds) || notionRevalidateSeconds < 1 || notionRevalidateSeconds > 300) {
+  throw new Error('NOTION_REVALIDATE_SECONDS must be an integer between 1 and 300')
+}
+
 const BLOG = {
   title: 'Xinzhe',
   author: 'Xinzhe',
@@ -40,7 +45,7 @@ const BLOG = {
   notionPageId: process.env.NOTION_PAGE_ID, // DO NOT CHANGE THIS! Edit .env file!
   notionSpacesId: process.env.NOTION_SPACES_ID, // DO NOT CHANGE THIS! Edit .env file!
   notionDataSourceId: process.env.NOTION_DATA_SOURCE_ID, // Optional for a database with one data source
-  notionRevalidateSeconds: 60, // Cache TTL and ISR refresh interval
+  notionRevalidateSeconds, // Cache TTL and ISR refresh interval (default 60 seconds)
   notionDomain: 'izuolan.notion.site',
   telegramToken: process.env.TELEGRAM_TOKEN, // The token of your Telegram bot
   telegramChatId: '7087670492', // The chat id of your Telegram bot
