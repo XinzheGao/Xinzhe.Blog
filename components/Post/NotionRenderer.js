@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 
 import { NotionRenderer as Renderer } from 'react-notion-x'
+import { mapNotionImageUrl } from '@/lib/notion/mapImageUrl'
 
 // Lazy-load some heavy components & override the renderers of some block types
 const components = {
@@ -53,6 +54,7 @@ const components = {
  */
 export default function NotionRenderer (props) {
   const { locale } = useRouter()
+  if (!props.blockMap) return null
   const mapPageUrl = (id) => {
     // console.log('mapPageUrl', BLOG.lang.split('-')[0])
     if (locale === BLOG.lang.split('-')[0]) {
@@ -65,6 +67,7 @@ export default function NotionRenderer (props) {
     <Renderer
       components={components}
       mapPageUrl={mapPageUrl}
+      mapImageUrl={mapNotionImageUrl}
       recordMap={props.blockMap}
       {...props}
     />

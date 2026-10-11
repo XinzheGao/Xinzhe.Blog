@@ -23,29 +23,18 @@ const Post = ({ post, blockMap }) => {
 export async function getStaticPaths({ locales }) {
   const posts = await getAllPosts({ onlyNewsletter: false })
   
-  // 为每种语言生成路径
-  let paths = []
-  
-  // 为每个语言生成路径
-  if (locales) {
-    for (const locale of locales) {
-      paths = paths.concat(
-        posts.map((row) => ({
-          params: { slug: row.slug },
-          locale
-        }))
-      )
+  const paths = []
+  const seen = new Set()
+  for (const locale of locales || ['zh']) {
+    for (const post of posts) {
+      if (post.lang?.length && post.lang[0] !== locale) continue
+      const key = `${locale}:${post.slug}`
+      if (seen.has(key)) continue
+      seen.add(key)
+      paths.push({ params: { slug: post.slug }, locale })
     }
-  } else {
-    paths = posts.map((row) => ({
-      params: { slug: row.slug }
-    }))
   }
-  
-  return {
-    paths,
-    fallback: true
-  }
+  return { paths, fallback: 'blocking' }
 }
 
 export async function getStaticProps({ params: { slug }, locale }) {
@@ -75,39 +64,25 @@ export async function getStaticProps({ params: { slug }, locale }) {
   }
   
   const posts = await getAllPosts({ onlyNewsletter: false })
-  let post = posts.find((t) => t.slug === targetSlug)
+  let post = posts.find((t) => t.slug === targetSlug && (!t.lang?.length || t.lang[0] === locale))
   
   // 如果找不到特定语言的内容，则使用默认内容
   if (!post && targetSlug !== slug) {
-    post = posts.find((t) => t.slug === slug)
+    post = posts.find((t) => t.slug === slug && (!t.lang?.length || t.lang[0] === locale))
   }
 
   if (!post) {
     return {
-      props: {
-        post: null,
-        blockMap: null
-      }
+      notFound: true,
+      revalidate: BLOG.notionRevalidateSeconds
     }
   }
 
-  try {
-    const blockMap = await getPostBlocks(post.id)
-    return {
-      props: {
-        post,
-        blockMap
-      },
-      revalidate: 1
-    }
-  } catch (err) {
-    console.error(err)
-    return {
-      props: {
-        post: null,
-        blockMap: null
-      }
-    }
+  const blockMap = await getPostBlocks(post.id)
+  if (!blockMap) return { notFound: true, revalidate: BLOG.notionRevalidateSeconds }
+  return {
+    props: { post, blockMap },
+    revalidate: BLOG.notionRevalidateSeconds
   }
 }
 

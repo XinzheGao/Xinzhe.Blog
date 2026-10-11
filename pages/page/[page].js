@@ -31,7 +31,7 @@ export async function getStaticProps(context) {
       postsToShow,
       showNext
     },
-    revalidate: 1
+    revalidate: BLOG.notionRevalidateSeconds
   }
 }
 

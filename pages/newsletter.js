@@ -17,20 +17,14 @@ export async function getStaticProps({ locale }) {
     hero = heros.find((t) => t.slug === 'newsletter')
   }
 
-  let blockMap
-  try {
-    blockMap = hero ? await getPostBlocks(hero.id) : null
-  } catch (err) {
-    console.error(err)
-    // return { props: { post: null, blockMap: null } }
-  }
+  const blockMap = hero ? await getPostBlocks(hero.id) : null
 
   return {
     props: {
       posts,
       blockMap
     },
-    revalidate: 1
+    revalidate: BLOG.notionRevalidateSeconds
   }
 }
 

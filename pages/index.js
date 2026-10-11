@@ -33,21 +33,7 @@ export async function getStaticProps({ locale }) {
     hero = heros.find((t) => t.slug === 'index')
   }
 
-  let blockMap
-  try {
-    blockMap = await getPostBlocks(hero.id)
-  } catch (err) {
-    console.error(err)
-    // 发生错误时，尝试获取默认主页
-    const defaultHero = heros.find((t) => t.slug === 'index')
-    if (defaultHero) {
-      try {
-        blockMap = await getPostBlocks(defaultHero.id)
-      } catch (error) {
-        console.error('Failed to fetch default hero content', error)
-      }
-    }
-  }
+  const blockMap = hero ? await getPostBlocks(hero.id) : null
 
   const postsToShow = posts.slice(0, BLOG.postsPerPage)
   const totalPosts = posts.length
@@ -59,7 +45,7 @@ export async function getStaticProps({ locale }) {
       showNext,
       blockMap
     },
-    revalidate: 1
+    revalidate: BLOG.notionRevalidateSeconds
   }
 }
 
