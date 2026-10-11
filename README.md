@@ -55,7 +55,7 @@ Next.js 生成页面 · react-notion-x 渲染正文
 
 ### 1. 获取代码并安装依赖
 
-准备 Node.js 与 pnpm。仓库使用 `pnpm-lock.yaml` 管理依赖。
+准备 Node.js 24 与 pnpm 7.33.7。仓库通过 `engines.node` 固定运行时，通过 `packageManager` 固定 pnpm 版本，并使用 `pnpm-lock.yaml` 管理依赖；避免使用不兼容的新版 pnpm 重写现有锁文件。
 
 ```bash
 git clone https://github.com/XinzheGao/Xinzhe.Blog.git
