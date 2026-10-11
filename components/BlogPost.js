@@ -25,7 +25,7 @@ const BlogPost = ({ post }) => {
             <header className='flex flex-col justify-between md:flex-row md:items-baseline'>
               <h2 className='text-xl md:text-xl font-medium mb-2 text-black dark:text-gray-100'>{post.title}</h2>
               <span className='text-color-fix font-light flex-shrink-0 text-gray-600 dark:text-gray-400'>
-                <FormattedDate date={post.date} />
+                <FormattedDate date={post.publishedAt} />
               </span>
             </header>
             <p className='font-light hidden md:block leading-8 text-gray-700 dark:text-gray-400'>{post.summary}</p>

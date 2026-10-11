@@ -1,14 +1,14 @@
 import BLOG from '@/blog.config'
-import { getAllPosts, getAllTagsFromPosts } from '@/lib/notion'
+import { getContents, getAllTagsFromPosts } from '@/lib/notion'
 import SearchLayout from '@/layouts/search'
 
 export default function Tag({ tags, posts, currentTag }) {
   return <SearchLayout tags={tags} posts={posts} currentTag={currentTag} />
 }
 
-export async function getStaticProps({ params, locale }) {
+export async function getStaticProps({ params, language: locale }) {
   const currentTag = params.tag
-  const posts = await getAllPosts({ onlyNewsletter: false, locale })
+  const posts = await getContents({ language: locale })
   const tags = getAllTagsFromPosts(posts)
   const filteredPosts = posts.filter(
     (post) => post && post.tags && post.tags.includes(currentTag)
@@ -24,7 +24,7 @@ export async function getStaticProps({ params, locale }) {
 }
 
 export async function getStaticPaths() {
-  const posts = await getAllPosts({ onlyNewsletter: false })
+  const posts = await getContents({  })
   const tags = getAllTagsFromPosts(posts)
   return {
     paths: Object.keys(tags).map((tag) => ({ params: { tag } })),

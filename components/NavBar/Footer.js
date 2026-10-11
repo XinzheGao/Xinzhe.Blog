@@ -38,17 +38,17 @@ const Footer = ({ fullWidth }) => {
     },
     {
       id: 1,
-      name: t.NAV.NEWSLETTER,
-      to: '/newsletter',
+      name: t.NAV.MUSINGS,
+      to: '/musings',
       icon: <NewspaperIcon className='inline-block mb-1 h-5 w-5' />,
-      show: BLOG.pagesShow.newsletter
+      show: BLOG.pagesShow.musings
     },
     {
       id: 2,
       name: t.NAV.BOOK,
-      to: '/book',
+      to: '/books',
       icon: <BookOpenIcon className='inline-block mb-1 h-5 w-5' />,
-      show: BLOG.pagesShow.book
+      show: BLOG.pagesShow.books
     },
     {
       id: 3,

@@ -33,7 +33,7 @@ const NotesHero = ({ blockMap }) => {
           />
           {/* <Social />
           <h2 className='text-xl pt-8 pb-4 font-light text-gray-500 dark:text-day'>
-            {t.HERO.NEWSLETTER.SUBSCRIPTION_HEAD}
+            {t.HERO.MUSINGS.SUBSCRIPTION_HEAD}
           </h2>
 
           <div className='flex flex-col sm:flex-row sm:justify-center gap-4'>
@@ -50,7 +50,7 @@ const NotesHero = ({ blockMap }) => {
                 </svg>
                 <span className='ml-4 flex items-start flex-col leading-none'>
                   <span className='text-xs text-gray-600 dark:text-day mb-1'>
-                    {t.HERO.NEWSLETTER.TG_CHANNEL}
+                    {t.HERO.MUSINGS.TG_CHANNEL}
                   </span>
                   <span className='font-medium'>@{BLOG.telegramChannelName}</span>
                 </span>
@@ -87,7 +87,7 @@ const NotesHero = ({ blockMap }) => {
                   <span className='text-xs text-gray-600 dark:text-day mb-1'>
                     {t.HERO.RSS_BUTTON_DES}
                   </span>
-                  <span className='font-medium'>{t.HERO.NEWSLETTER.RSS_BUTTON}</span>
+                  <span className='font-medium'>{t.HERO.MUSINGS.RSS_BUTTON}</span>
                 </span>
               </button>
             )}

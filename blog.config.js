@@ -8,10 +8,10 @@ const BLOG = {
   author: 'Xinzhe',
   email: 'gao-yiqian@outlook.com',
   link: 'https://xinzhe.dev',
-  newsletter: 'Weekly',
+  musings: 'Musings',
   notes: 'Notes',
   projects: 'Project',
-  book: 'Book',
+  books: 'Books',
   description: 'Dream it. Chase it. Code it.',
   lang: 'en', // ['zh', 'en'] 
   timezone: 'Asia/Tokyo', // See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for all options.
@@ -24,10 +24,10 @@ const BLOG = {
   postsPerPage: 10,
   sortByDate: true,
   pagesShow: {
-    newsletter: true,
+    musings: true,
     notes: true,
     projects: true,
-    book: true,
+    books: true,
   },
   previewImagesEnabled: true,
   autoCollapsedNavBar: false, // The automatically collapsed navigation bar 
