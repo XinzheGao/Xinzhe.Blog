@@ -39,7 +39,8 @@ const BLOG = {
   },
   notionPageId: process.env.NOTION_PAGE_ID, // DO NOT CHANGE THIS! Edit .env file!
   notionSpacesId: process.env.NOTION_SPACES_ID, // DO NOT CHANGE THIS! Edit .env file!
-  notionAccessToken: process.env.NOTION_ACCESS_TOKEN, // Useful if you prefer not to make your database public
+  notionDataSourceId: process.env.NOTION_DATA_SOURCE_ID, // Optional for a database with one data source
+  notionRevalidateSeconds: 60, // Cache TTL and ISR refresh interval
   notionDomain: 'izuolan.notion.site',
   telegramToken: process.env.TELEGRAM_TOKEN, // The token of your Telegram bot
   telegramChatId: '7087670492', // The chat id of your Telegram bot

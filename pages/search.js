@@ -1,3 +1,4 @@
+import BLOG from '@/blog.config'
 import { getAllPosts, getAllTagsFromPosts } from '@/lib/notion'
 import SearchLayout from '@/layouts/search'
 
@@ -14,6 +15,6 @@ export async function getStaticProps({ locale }) {
       tags,
       posts: limitedPosts
     },
-    revalidate: 1
+    revalidate: BLOG.notionRevalidateSeconds
   }
 }

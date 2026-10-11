@@ -5,9 +5,11 @@ module.exports = {
     localeDetection: true
   },
   output: 'standalone',
+  // Avoid multiple build workers exhausting one Notion connection's rate limit.
+  experimental: { cpus: 1 },
   transpilePackages: ['dayjs'],
   images: {
-    domains: ['www.notion.so', 'images.unsplash.com', 's3.us-west-2.amazonaws.com']
+    domains: ['www.notion.so', 'images.unsplash.com', 's3.us-west-2.amazonaws.com', 'prod-files-secure.s3.us-west-2.amazonaws.com', 'attachment.notion-static.com']
   },
   async headers() {
     return [

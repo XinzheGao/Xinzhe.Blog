@@ -1,3 +1,4 @@
+import BLOG from '@/blog.config'
 import { getAllPosts, getAllTagsFromPosts } from '@/lib/notion'
 import SearchLayout from '@/layouts/search'
 
@@ -5,9 +6,9 @@ export default function Tag({ tags, posts, currentTag }) {
   return <SearchLayout tags={tags} posts={posts} currentTag={currentTag} />
 }
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps({ params, locale }) {
   const currentTag = params.tag
-  const posts = await getAllPosts({ onlyNewsletter: false })
+  const posts = await getAllPosts({ onlyNewsletter: false, locale })
   const tags = getAllTagsFromPosts(posts)
   const filteredPosts = posts.filter(
     (post) => post && post.tags && post.tags.includes(currentTag)
@@ -18,7 +19,7 @@ export async function getStaticProps({ params }) {
       posts: filteredPosts,
       currentTag
     },
-    revalidate: 1
+    revalidate: BLOG.notionRevalidateSeconds
   }
 }
 

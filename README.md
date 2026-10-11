@@ -85,14 +85,27 @@ pnpm install
 在项目根目录创建 `.env.local`：
 
 ```dotenv
-# 内容数据库页面 ID，通常为 Notion URL 中的 32 位 ID
+# 官方 Notion 内部连接的 API Token（必须）
+NOTION_API_TOKEN=your_notion_internal_connection_token
+
+# 博客数据库 ID，通常为 Notion URL 中的 32 位 ID
 NOTION_PAGE_ID=your_notion_database_page_id
 
-# Notion workspace / space ID，用于 /s/[subpage] 子页面遍历与访问检查
-NOTION_SPACES_ID=your_notion_space_id
+# 只有数据库包含多个数据源时才需要填写
+# NOTION_DATA_SOURCE_ID=your_data_source_id
 ```
 
-`NOTION_ACCESS_TOKEN` 是可选配置，会传入 `notion-client` 的 `authToken` 参数；它不是官方 Integration Secret。使用私有内容时，需要确认当前客户端支持的认证方式。
+在 Notion 开发者门户创建内部连接，启用“读取内容”，再在博客数据库的 Connections 中添加该连接。Vercel 的 Production、Preview、Development 分别配置 `NOTION_API_TOKEN` 和 `NOTION_PAGE_ID`。密钥不要提交到 Git，也不要加 `NEXT_PUBLIC_` 前缀。
+
+取数已使用官方 REST API（固定版本 `2026-03-11`）。旧的 `NOTION_ACCESS_TOKEN` 和 `NOTION_SPACES_ID` 不再用于认证或子页面权限判断；现有 Vercel 变量可暂时保留。子页面必须位于本博客已发布文章下，Integration 能访问的其他私有页面不会因此公开。
+
+`blog.config.js` 的 `notionRevalidateSeconds` 默认为 60 秒，同时控制取数缓存和 ISR。有人访问时，修改通常在约 1～2 分钟后的访问中出现；低访问量页面会在下次访问时触发更新。刷新失败时抛出错误，由 Next.js 保留此前成功生成的页面并在后续访问重试；首次生成失败仍会报错。
+
+正文转换保留现有 `react-notion-x` 渲染器，支持文本、标题、列表、代码、图片、公式、引用、Callout、折叠、待办、列布局、简单表格和媒体。官方 API 不返回 Notion 的 full-width 显示设置，默认使用普通宽度。尚未支持的块（例如嵌入数据库）会使刷新失败，避免静默丢失内容。
+
+文章按 `lang` 选择语言，包括不同语言共用同一个 `slug` 的情况。首页和栏目介绍仍沿用 `index[-en/-ja]`、`notes[-en/-ja]` 等现有命名。本次不改变三份译文的编辑方式。
+
+运行后端回归检查：`node --test tests/notion-backend.test.cjs`。
 
 编辑 [`blog.config.js`](blog.config.js)，设置站点标题、作者、域名、描述、主题、栏目和社交链接。更换域名时同步调整 `link`，站点地图和 RSS 会读取该配置。界面文案位于 [`lib/lang.js`](lib/lang.js)，静态图片与图标位于 `public/`。
 
