@@ -35,6 +35,7 @@ module.exports = {
   async rewrites() {
     return {
       beforeFiles: [
+        { source: '/books', destination: '/maintenance' },
         ...maintenanceLocales.map((locale) => ({
           source: `/${locale}/:path*`, destination: `/${locale}/maintenance`, locale: false
         }))
