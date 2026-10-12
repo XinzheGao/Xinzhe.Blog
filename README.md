@@ -1,54 +1,103 @@
 # Xinzhe.Blog
 
-基于 Next.js 和 Notion 的个人博客，用于发布技术文章、学习笔记、项目记录、随想与读书笔记。内容在 Notion 中编辑，网站通过官方 API 读取并渲染，当前专注维护中文网站，英文和日文入口暂时显示维护提示并返回中文首页。
+我的个人博客，用来记录技术实践、学习笔记、开源项目和生活中的思考。内容在 Notion 中编辑，网站通过官方 Notion API 读取，使用 Next.js 和 React 展示。
 
-[在线访问](https://xinzhe.dev) · [问题反馈](https://github.com/XinzheGao/Xinzhe.Blog/issues) · [MIT 许可证](LICENSE)
+[访问博客](https://xinzhe.dev) · [问题反馈](https://github.com/XinzheGao/Xinzhe.Blog/issues) · [MIT License](LICENSE)
 
-## 功能
+## 当前状态
 
-- **统一内容管理**：一个 Notion 数据库管理文章、笔记、项目、随想、书架、独立页面及栏目介绍。
-- **中文首页**：域名根路径固定显示中文，不根据浏览器语言自动跳转。英文和日文路径显示维护插画及对应语言的文案，可点击按钮返回中文首页。
-- **自动文章地址**：根据内容类型与 Notion 页面 ID 生成地址，无需填写 slug；保留旧地址的永久跳转。
-- **发布状态与日期控制**：草稿、未填写发布日期及未来日期的内容不进入公开内容列表。
-- **Notion 正文渲染**：支持常见文本块、代码高亮、数学公式、图片、媒体、简单表格及文章目录。
-- **内容更新**：服务端请求缓存配合 Next.js ISR，在访问时更新页面；内容编辑通常不需要重新部署代码。
-- **阅读与发现**：响应式布局、浅色与深色主题、文章分页、标签页面和基于元数据的搜索。
-- **订阅与分享**：提供 RSS、页面 SEO 信息、Open Graph 元数据，以及构建时生成的网站地图和 robots.txt。
+- 主要维护中文网站，首页、笔记、项目、随想和文章详情可以访问。
+- 英文、日文及书架入口暂时显示维护页，内容和相关实现仍保留。
+- 搜索页默认随机展示 10 条内容，关键词搜索覆盖全部已发布的推文、笔记和项目。
+- 文章地址自动生成，已保存的历史地址继续跳转到新地址。
+- 评论与通知暂未恢复。仓库保留 SupaComments、Utterances 和 Telegram 接口，邮件通知尚未实现。
+
+项目基于 [Notionic](https://github.com/izuolan/notionic) 定制。当前源码主要使用 JavaScript，`package.json` 仍保留部分上游项目元信息。
 
 ## 技术栈
 
-| 层级       | 技术                                        |
-| ---------- | ------------------------------------------- |
-| 运行环境   | Node.js 24.x、pnpm 7.33.7                   |
-| 应用框架   | Next.js 13，Pages Router                    |
-| 页面开发   | JavaScript、React 18                        |
-| 样式与交互 | Tailwind CSS、Framer Motion、next-themes    |
-| 内容读取   | 官方 Notion REST API，API 版本 `2026-03-11` |
-| 正文渲染   | react-notion-x、Prism、公式渲染组件         |
-| 日期与订阅 | Day.js、feed、next-sitemap                  |
-| 部署       | Vercel；也可使用 Node.js 运行生产构建       |
+| 部分 | 实现 |
+| --- | --- |
+| 运行环境 | Node.js 24.x、pnpm 7.33.7 |
+| 页面与路由 | Next.js 13 Pages Router、React 18、JavaScript |
+| 样式与交互 | Tailwind CSS、Framer Motion、next-themes、NProgress |
+| 内容读取 | 服务端 `fetch` 调用官方 Notion REST API |
+| 正文展示 | react-notion-x、notion-utils、Prism、KaTeX |
+| 图片预览 | sharp、got、p-map、p-memoize |
+| 日期与订阅 | Day.js、feed |
+| 网站地图 | next-sitemap |
+| 部署 | Vercel Git 集成，也可使用 Node.js 运行生产构建 |
 
-项目基于 [Notionic](https://github.com/izuolan/notionic) 定制。内容读取层将官方 Notion API 返回的数据转换成 `react-notion-x` 使用的格式。
-
-## 工作流程
+## 内容怎样到达网页
 
 ```text
-Notion 数据库与页面正文
-        ↓ 官方 API：查询内容、分页读取正文块
-服务端缓存与发布条件筛选
-        ↓ 属性解析、自动地址、多语言原文关联
-Next.js 静态生成 / 按需生成 / ISR
-        ↓
-文章页面、栏目列表、搜索与 RSS
+Notion 数据库：属性与页面正文
+    │
+    ├─ officialClient.js：查询数据源、分页取数、递归读取正文
+    ├─ notionFetchHelper.js：缓存与合并并发请求
+    │
+    ├─ contentSchema.js：解析属性、判断发布条件、生成地址
+    └─ officialAdapter.js：转换正文块为 recordMap
+             │
+             ▼
+    pages：getStaticProps / getStaticPaths / getServerSideProps
+             │
+             ▼
+    layouts + components：列表、正文、目录、搜索、导航
+             │
+             ▼
+    React 页面 / RSS XML
 ```
 
-Notion 连接令牌只在服务端使用。子页面访问需要属于本博客的已发布内容；连接能读取的其他页面不会因此成为公开博客页面。
+### 1. 查询内容列表
 
-## 快速开始
+页面通过 [`lib/notion.js`](lib/notion.js) 导入公共取数方法。`getContents()` 的调用路径是：
 
-### 1. 安装依赖
+```text
+getContents({ type, language, tag })
+    → getBlogPages()
+    → getBlogPages 的进程内缓存
+    → 查询 Notion 数据源
+    → contentMetadata() 统一属性
+    → filterContents() 筛选可发布内容
+    → 按 publishedAt 降序排列
+```
 
-准备 Node.js 24.x，并安装仓库指定版本的 pnpm：
+[`officialClient.js`](lib/notion/officialClient.js) 使用 `Notion-Version: 2026-03-11`。未填写数据源 ID 时，先通过数据库 ID 查询数据源；只有一个数据源才会自动选用。数据库查询每页最多取 100 条，继续读取游标直到结束，不只处理第一页。
+
+首页及各栏目按 `type` 和当前语言取数；栏目顶部介绍由 `getSectionIntro(section, language)` 单独取得。
+
+### 2. 读取文章正文
+
+[`pages/[slug].js`](pages/[slug].js) 先根据地址和语言找到内容，随后调用：
+
+```text
+getPostBlocks(pageId)
+    → getPageRecordMap(pageId)
+    → 检查页面的公开访问条件
+    → 分页、递归读取 blocks/{id}/children
+    → officialAdapter 转换正文块
+    → 可选的图片模糊预览
+    → NotionRenderer 展示 recordMap
+```
+
+支持文本、标题、列表、引用、折叠块、待办事项、代码、公式、图片、媒体、简单表格和分栏等常用块。代码与公式组件按需加载。文章目录从正文的页面根节点与标题块生成。
+
+转换层遇到不支持的块会报错，而不是静默丢掉这部分正文。嵌入数据库不在当前支持范围内；Notion 的页面全宽设置也未映射，默认使用普通阅读宽度。
+
+### 3. 页面生成与刷新
+
+- 文章和栏目主要通过 `getStaticProps` 生成，结合 ISR 更新。
+- 文章、标签和子页面的未预生成地址使用 `fallback: 'blocking'` 按需生成。
+- 首页后续分页使用动态分页路由。
+- `/feed` 通过 `getServerSideProps` 返回 RSS XML。
+- `/api/*` 为服务端接口，Notion 令牌不传给浏览器。
+
+`/s/{pageId}` 用于访问 Notion 子页面。服务端会追溯它是否属于本博客已发布的内容，连接能读取的其他页面不会因此自动公开。已发布文章下的子页面属于文章的公开内容范围。
+
+## 本地运行
+
+准备 Node.js 24.x 和 pnpm 7.33.7：
 
 ```bash
 npm install -g pnpm@7.33.7
@@ -56,209 +105,217 @@ npm install -g pnpm@7.33.7
 git clone https://github.com/XinzheGao/Xinzhe.Blog.git
 cd Xinzhe.Blog
 pnpm install --frozen-lockfile
-```
-
-### 2. 连接 Notion
-
-1. 在 Notion 中创建内部连接，并启用读取内容的权限。
-2. 在博客数据库的 Connections 中添加该连接，确保它可以读取数据库与页面正文。
-3. 按下方的内容模型准备数据库属性，属性名称和选项值区分大小写。
-4. 获取数据库 ID；如果数据库包含多个数据源，再指定要使用的数据源 ID。
-
-内容读取使用连接授权，无需为了读取内容而将整个数据库公开发布。
-
-### 3. 配置环境变量
-
-```bash
 cp .env.example .env.local
 ```
 
-在 `.env.local` 中填写：
+在 Notion 创建有读取权限的内部连接，并在博客数据库的 Connections 中添加该连接。连接需要能读取数据库及页面正文，无须将整个数据库公开发布。
+
+在 `.env.local` 填写：
 
 ```dotenv
 NOTION_API_TOKEN=your_internal_connection_token
 NOTION_PAGE_ID=your_database_id
-# 多数据源数据库需要填写；只有一个数据源时可留空。
 NOTION_DATA_SOURCE_ID=
 NOTION_REVALIDATE_SECONDS=60
 ```
 
-| 变量                        | 是否必需           | 说明                                              |
-| --------------------------- | ------------------ | ------------------------------------------------- |
-| `NOTION_API_TOKEN`          | 是                 | 官方 Notion 内部连接令牌                          |
-| `NOTION_PAGE_ID`            | 是，未指定数据源时 | 博客数据库 ID；代码用它查询唯一的数据源           |
-| `NOTION_DATA_SOURCE_ID`     | 否                 | 显式指定数据源；多数据源数据库必须配置            |
-| `NOTION_REVALIDATE_SECONDS` | 否                 | 缓存与 ISR 的刷新间隔，整数 `1–300`，默认 `60` 秒 |
+| 变量 | 说明 |
+| --- | --- |
+| `NOTION_API_TOKEN` | 必需，官方 Notion 内部连接令牌 |
+| `NOTION_PAGE_ID` | 数据库 ID；未显式指定数据源时必需 |
+| `NOTION_DATA_SOURCE_ID` | 可选；数据库含多个数据源时必须指定 |
+| `NOTION_REVALIDATE_SECONDS` | 缓存与 ISR 间隔，整数 `1–300`，默认 `60` 秒 |
 
-`.env.local` 已被 Git 忽略。不要提交真实令牌，也不要给令牌变量添加 `NEXT_PUBLIC_` 前缀。旧的 `NOTION_ACCESS_TOKEN`、`NOTION_SPACES_ID` 不参与当前官方 API 的内容认证。
+真实令牌只放在服务器环境变量或被 Git 忽略的 `.env.local` 中，不使用 `NEXT_PUBLIC_` 前缀。旧 `NOTION_ACCESS_TOKEN` 和 `NOTION_SPACES_ID` 不参与当前取数流程。
 
-### 4. 配置站点并启动
-
-在 [`blog.config.js`](blog.config.js) 中修改站点标题、作者、域名、描述、时区、分页数量与社交链接。语言路由在 [`next.config.js`](next.config.js) 中配置，界面文案位于 [`lib/lang.js`](lib/lang.js)。
+配置完成后运行：
 
 ```bash
 pnpm dev
 ```
 
-打开 [http://localhost:3000](http://localhost:3000)。
+打开 [localhost:3000](http://localhost:3000)。修改站点信息使用 [`blog.config.js`](blog.config.js)，其中包含标题、作者、域名、描述、时区、分页和可选服务配置。当前日期按 `Asia/Tokyo` 解释。
 
 ## Notion 内容模型
 
-### 数据库属性
+属性名称和选项值应与代码一致。
 
-| 属性                | Notion 类型            | 用途                                                 |
-| ------------------- | ---------------------- | ---------------------------------------------------- |
-| `title`             | Title                  | 内容标题                                             |
-| `type`              | Select                 | 内容类型，选项见下表                                 |
-| `language`          | Select                 | `zh`、`en`、`ja`                                     |
-| `publicationStatus` | Select 或 Status       | `Draft` 或 `Published`                               |
-| `publishedAt`       | Date                   | 手动选择发布日期；按站点时区解释，不使用创建时间代替 |
-| `summary`           | Text                   | 可选摘要，用于列表简介、搜索、订阅及页面描述         |
-| `tags`              | Multi-select           | 可选标签                                             |
-| `section`           | Select                 | 栏目介绍使用的定位属性                               |
-| `source`            | Relation，关联本数据库 | 译文关联原文；每篇译文关联一篇原文                   |
-| `translations`      | Relation，关联本数据库 | 可选，用于在 Notion 中查看对应译文                   |
-| `legacySlug`        | Text                   | 可选旧地址别名，新内容无需填写                       |
+| 属性 | Notion 类型 | 用途 |
+| --- | --- | --- |
+| `title` | Title | 内容标题 |
+| `type` | Select | 内容类型，见下表 |
+| `language` | Select | `zh`、`en`、`ja` |
+| `publicationStatus` | Select 或 Status | 网站只展示 `Published` 内容 |
+| `publishedAt` | Date | 手动发布日期，不用创建时间替代 |
+| `summary` | Text | 可选摘要，用于列表、搜索、订阅和页面描述 |
+| `tags` | Multi-select | 可选标签 |
+| `section` | Select | 栏目介绍的定位属性 |
+| `source` | Relation，关联本数据库 | 译文关联原文，每篇译文关联一篇原文 |
+| `translations` | Relation，关联本数据库 | 可选，在 Notion 中查看对应译文 |
+| `legacySlug` | Text | 可选，补充历史地址别名 |
 
-`translationTargets`、`translationStatus`、`projectStage`、`readingStatus` 与 `createdAt` 可以用于 Notion 内的编辑、翻译计划、项目和阅读管理。它们不代替网站的发布状态或发布日期。
+| `type` | 内容 | 列表入口 |
+| --- | --- | --- |
+| `Post` | 首页推文、技术文章 | `/`、`/posts` |
+| `Note` | 学习笔记 | `/notes` |
+| `Project` | 项目记录 | `/projects` |
+| `Musings` | 随想 | `/musings` |
+| `Book` | 读书笔记 | `/books`，当前显示维护页 |
+| `Page` | 独立页面 | 自动生成的详情地址 |
+| `SectionIntro` | 首页或栏目介绍 | 由 `section` 和 `language` 定位 |
 
-### 内容类型与栏目
+栏目介绍使用 `home`、`notes`、`projects`、`musings` 或 `books` 作为 `section`，不会进入普通内容列表，也不需要公开 slug。首页介绍缺少英文或日文记录时，取数逻辑可以回退到中文；当前英文和日文网站仍处于维护状态。
 
-| `type`         | 内容           | 页面入口                          |
-| -------------- | -------------- | --------------------------------- |
-| `Post`         | 文章           | `/`、`/posts`                     |
-| `Note`         | 笔记           | `/notes`                          |
-| `Project`      | 项目           | `/projects`                       |
-| `Musings`      | 随想           | `/musings`                        |
-| `Book`         | 读书笔记       | `/books`                          |
-| `Page`         | 独立页面       | 自动生成的页面地址                |
-| `SectionIntro` | 首页或栏目介绍 | 通过 `section` 与 `language` 定位 |
+发布内容时，填写标题、类型、语言、发布日期和正文，再将 `publicationStatus` 设为 `Published`。公开内容需要标题非空、发布日期有效且已到达；草稿、未来日期、缺少发布日期、归档及回收站页面不进入公开列表。
 
-栏目介绍的 `section` 使用 `home`、`notes`、`projects`、`musings` 或 `books`。这类记录不会进入普通文章列表，也不需要 slug。首页缺少英文或日文介绍时，可回退使用中文首页介绍。
+翻译计划、校对状态、项目阶段和阅读状态等其他属性可以用于 Notion 内的管理，但不会代替网站发布条件，也不会触发自动翻译或自动发布。
 
-### 发布一篇内容
+## 自动地址与历史跳转
 
-1. 新建数据库页面，填写标题并编辑正文。
-2. 选择内容类型和语言。
-3. 填写 `publishedAt`；摘要与标签按需填写。
-4. 将 `publicationStatus` 设置为 `Published`。
-
-网站展示需要标题非空、状态为 `Published`，且发布日期已经到达；正文内容还需使用支持的类型与语言。草稿和未来日期的内容不会进入公开列表。数据库中归档或移入回收站的页面也会被排除。
-
-### 自动地址与旧链接
-
-正文页面地址的格式为：
+新内容无须填写 `slug`，地址根据类型和页面 ID 生成：
 
 ```text
-/{内容类型的小写名称}-{去掉连字符的 Notion 页面 ID}
+/post-{去掉连字符的页面ID}
+/note-{去掉连字符的页面ID}
+/project-{去掉连字符的页面ID}
 ```
 
-例如：
+修改标题不改变地址；修改类型会改变地址前缀。历史别名来自 [`legacySlugs.json`](lib/notion/legacySlugs.json)，以及可选的 `legacySlug`、旧 `slug` 属性。访问已保存的历史地址时，永久跳转到对应语言的新地址。删除 Notion 的旧 slug 列，不影响已经写入 JSON 的别名。
 
-```text
-/post-0123456789abcdef0123456789abcdef
-/en/post-abcdef0123456789abcdef0123456789
-/ja/note-1234567890abcdef1234567890abcdef
-```
+多语言内容分别保存为独立页面，通过译文的 `source` 关联原文。当前维护策略只影响路由展示，未删除译文数据。
 
-Notion 数据库不需要 `slug` 列。修改标题不会改变地址，同名文章也有不同地址；修改内容类型会改变地址前缀。
+## 搜索与标签
 
-历史地址保存在 [`lib/notion/legacySlugs.json`](lib/notion/legacySlugs.json) 中，也可以通过可选的 `legacySlug` 添加别名。旧地址会永久跳转到对应语言的新地址；删除数据库的 slug 属性不会删除已保存的历史跳转。
+搜索与标签页共用 [`layouts/search.js`](layouts/search.js)，筛选和随机抽样函数位于 [`lib/search.js`](lib/search.js)。
 
-### 多语言内容
+1. 服务端取得当前语言全部已发布内容，只保留 `Post`、`Note`、`Project`。
+2. 服务端提供初始的随机 10 条，浏览器挂载后重新抽样；抽样不改变完整搜索列表。
+3. 输入关键词时，在完整列表的标题、摘要和标签中匹配，忽略大小写及关键词两端空格。
+4. 搜索结果先展示 20 条，点击“加载更多”每次增加 20 条。
+5. 清空关键词后恢复本次访问的随机列表。
 
-当前只开放中文网站。`/en`、`/ja` 及其子路径根据 `lib/siteAvailability.js` 配置显示对应语言的维护页，不自动跳转，可点击明确标注的按钮返回中文首页。维护页固定使用一张齿轮与扳手插画，刷新时不切换。语言菜单保留英文、日文入口并标注“维护中”，维护页不进入搜索索引或站点地图。
+搜索不读取文章正文，也不包含随想、书架、独立页面或栏目介绍。标签数量按相同的三类内容计算；标签页只展示当前语言该标签下的内容，支持继续搜索和加载更多。
 
-书架板块 `/books`、`/en/books`、`/ja/books` 均暂时显示对应语言的维护页，旧入口 `/book` 仍跳转至 `/books`。书架内容保留，维护期间不进入站点地图。
+搜索数据随页面的 ISR 更新，不会在每次按键时重新请求 Notion。
 
-404 页面和服务错误页使用地图与断开连接插画，以及中文、英文、日文文案。语言由当前路由确定，不根据浏览器语言切换。服务错误页提供重试按钮，页面不显示内部错误详情。返回首页时优先使用同语言首页；该语言处于维护状态时，按钮明确标注返回中文首页。三张透明 PNG 位于 `public/images/status/`，通过响应式图片适配手机与浅色、深色主题。开发环境的 `/status-preview` 可切换场景、语言与主题；生产环境不开放该预览页。
+## 缓存与图片
 
-多语言内容数据继续保留：每种语言是一条独立页面记录，分别设置 `language`；英文和日文译文的 `source` 关联同一篇中文原文。
+[`notionFetchHelper.js`](lib/notion/notionFetchHelper.js) 为内容列表和正文提供进程内缓存：相同请求合并、条目按 TTL 过期、缓存数量超过 300 时淘汰最早插入的条目。缓存不是持久化数据库，不同进程不共享。
 
-翻译由编辑者维护。Notion 中的翻译计划属性用于组织工作，不会自动翻译或自动发布内容。
+Notion 请求在单进程内排队，请求起始时间至少间隔 350 毫秒，单次超时 20 秒；网络错误、429 和服务端错误最多尝试 4 次。正文递归设有深度和块数量上限，避免无限遍历。
 
-## 缓存与更新
+`NOTION_REVALIDATE_SECONDS` 同时控制上述缓存 TTL 与页面 ISR。ISR 由访问触发，60 秒不是固定轮询周期，也不保证 Notion 修改在 60 秒内恰好显示。刷新失败时请求层抛出错误，已有成功页面可由 Next.js ISR 保留；首次生成失败没有旧页面可回退。
 
-`NOTION_REVALIDATE_SECONDS` 同时控制进程内 Notion 请求缓存和页面 ISR。请求层还会合并相同的并发读取、限制请求间隔，并对网络错误、限流和服务端错误重试。
+图片使用 Notion 返回的完整地址，上传资源的临时签名链接不再经过旧图片代理。开启 `previewImagesEnabled` 时，服务端生成低清模糊占位图；预览生成失败会返回空预览，不会因此主动截断正文。
 
-ISR 由访问触发，刷新间隔不代表固定时间轮询，也不保证修改后恰好在该秒数生效。低访问量页面会在后续访问时更新，缓存层叠加也可能延迟显示。更新失败会抛出错误；Next.js 可保留之前成功生成的页面并在后续访问重试，首次生成失败则无法使用旧页面回退。
+Open Graph 和 Twitter 分享图片默认使用本站 `/cover.png`，不再依赖旧外部图片生成服务。站点图标使用现有 PNG 和 ICO；静态资源缓存配置位于 [`vercel.json`](vercel.json)，实际响应还可能受前置 CDN 的缓存规则影响。
 
-## 部署
+## 维护页与错误页
+
+- 根路径使用中文，关闭浏览器语言自动跳转。
+- [`siteAvailability.js`](lib/siteAvailability.js) 指定维护语言，当前为 `en`、`ja`。
+- [`next.config.js`](next.config.js) 将这两种语言的页面路径重写到对应维护页，将 `/books` 重写到中文维护页。
+- `/book` 永久跳转到 `/books`，`/newsletter` 永久跳转到 `/musings`。
+- 维护、404 和服务错误页由 `StatusPage` 统一展示；维护与错误页声明 `noindex`，维护语言和书架路径被网站地图配置排除。
+- `/status-preview` 仅在开发环境开放，可预览状态页、语言和主题。
+
+恢复维护中的栏目时，需要修改路由与维护语言配置；导航显示开关本身不等于解除维护路由。
+
+## 服务端接口与暂缓功能
+
+| 接口 | 当前实现 |
+| --- | --- |
+| `/api/check-slug?slug=...` | 检查已发布内容的当前自动地址，返回 `{ found }`；不解析历史别名 |
+| `/api/content-languages?slug=...&language=zh` | 根据原文关联取得已发布语言版本，返回 `{ versions }` |
+| `/api/sendtotg` | 接收联系表单或评论通知，调用 Telegram Bot API |
+
+联系表单经 `ContactForm → /api/sendtotg → Telegram sendMessage` 转发，需要服务器的 `TELEGRAM_TOKEN` 和配置里的聊天 ID。当前实现没有将私信保存到数据库，并把请求对象直接放进消息 `text`；发送逻辑仍待修整，不能仅凭接口存在认定通知可用。
+
+评论组件按 `blog.config.js` 选择 SupaComments 或 Utterances。当前选择 SupaComments，但 Supabase 地址和匿名密钥为空，文章页仍可能报 `supabaseUrl is required`。本地评论脚本只有中文和英文版本，评论按网页路径关联；恢复历史评论时需要检查旧地址与新地址的对应关系。
+
+邮件通知、私信持久化和评论恢复均未实现。统计组件保留 Google Analytics、Ackee、Umami 和 Cloudflare Insights 的选择，当前 `analytics.provider` 为空。
+
+此前清理已移除旧 Craft 卡片和转发接口、旧 SVG 头像、旧全文订阅与元信息工具，以及直接依赖 `notion-client`、`preact`。仓库仍有部分旧文案与注释代码；保留中的多语言、书架和评论功能不属于已经删除的范围。
+
+## RSS 与部署
+
+`/feed` 返回 RSS 2.0，包含最新 10 条已发布内容的标题、摘要、链接和日期。当前代码未限定内容类型或语言，范围与搜索页不同；不包含正文全文。
 
 ### Vercel
 
-1. 导入 GitHub 仓库，框架选择 Next.js，Node.js 版本设置为 `24.x`。
-2. 为部署环境配置上述 Notion 环境变量；Preview 和 Production 分别配置。
-3. 使用 `pnpm build` 构建。`postbuild` 会根据 `blog.config.js` 中的域名生成网站地图与 robots.txt。
-4. 部署后检查首页、正文、语言切换和旧地址跳转，再连接自定义域名。
+将仓库导入 Vercel，使用 Node.js 24.x，并为 Production、Preview 分别配置 Notion 环境变量。生产分支使用 `main`，推送后由 Git 集成构建和部署。
 
-构建时会读取 Notion 数据库和正文，因此部署环境需要有效令牌、正确的数据源配置及 Notion API 网络访问。
+构建需要访问 Notion 数据库与正文。完成后核对部署提交、Ready 状态和正式域名，再检查搜索、标签、正文滚动、维护入口与旧地址跳转。
 
-### 本地生产运行
+仓库另外保留每日调用 Deploy Hook 的 GitHub Actions 工作流；它与访问触发的 ISR 是两条独立机制。复制项目时需要配置自己的 Hook，文件存在不代表工作流已在 GitHub 启用。
+
+### 本地生产运行与网站地图
 
 ```bash
 pnpm build
+pnpm run postbuild
 pnpm start
 ```
 
-代码配置了 `output: 'standalone'`。文章正文依赖服务端 Notion 读取与 ISR，不是纯静态 HTML 导出项目。
+`build` 脚本执行 `next build`；`postbuild` 执行 `next-sitemap`，按照配置生成网站地图和 `robots.txt`。pnpm 环境可能不自动执行前后置脚本，因此这里显式调用；部署环境若已配置执行该步骤，无须重复添加。
+
+代码配置了 `output: 'standalone'`，但内容读取、API 和 ISR 仍需要服务器运行，不是纯静态 HTML 导出项目。
 
 ## 开发与验证
-
-| 命令          | 用途                             |
-| ------------- | -------------------------------- |
-| `pnpm dev`    | 启动开发服务器                   |
-| `pnpm build`  | 构建生产版本，并执行网站地图生成 |
-| `pnpm start`  | 启动生产服务器                   |
-| `pnpm format` | 使用 Prettier 格式化仓库文件     |
-
-后端与内容模型的回归检查使用 Node.js 内置测试运行器：
 
 ```bash
 node --test tests/*.test.cjs
 ```
 
-测试覆盖属性与正文块转换、分页读取、缓存行为、发布条件、子页面访问边界、自动地址、历史跳转、多语言关联、日期显示及目录生成、搜索范围和随机展示。测试中的 API 响应通过模拟提供，不需要真实 Notion 令牌；真实数据与线上部署仍需单独验证。
+| 测试文件 | 覆盖范围 |
+| --- | --- |
+| `content-schema.test.cjs` | 发布条件、日期、自动地址、历史跳转、多语言关联 |
+| `notion-backend.test.cjs` | 属性与正文转换、分页、缓存、公开访问边界 |
+| `notion-toc.test.cjs` | 文章与子页面目录、缺少根节点和标题的情况 |
+| `search.test.cjs` | 搜索类型范围、随机抽样、完整列表匹配和关键词处理 |
 
-## 项目结构
+测试使用模拟数据，不需要真实 Notion 令牌。测试通过不等于真实服务已可用，部署后仍需检查数据和浏览器交互。使用模拟内容验证本地构建时，不应把模拟环境配置或构建产物用于正式部署。
+
+其他命令：`pnpm dev` 启动开发服务，`pnpm start` 运行生产构建，`pnpm format` 格式化文件。`dev.sh` 会结束匹配到的 pnpm/next 进程，日常启动优先使用 `pnpm dev`。
+
+## 目录结构
 
 ```text
 .
-├── components/           # 导航、列表、主题、SEO、正文与目录组件
-├── layouts/              # 正文和搜索布局
+├── components/
+│   ├── Common/          # SEO、图标、日期、标签、统计与动画
+│   ├── Hero/            # 首页与栏目介绍
+│   ├── NavBar/          # 导航、页脚、语言与主题切换
+│   └── Post/            # 正文、目录、侧栏与评论
+├── layouts/             # 文章详情和搜索布局
 ├── lib/
-│   ├── notion/           # 官方 API、块转换、内容模型、缓存与历史地址
-│   ├── contentDate.js    # 按语言与时区格式化日期
-│   ├── lang.js           # 中英日界面文案
-│   └── rss.js            # RSS 生成
-├── pages/                # Pages Router 页面、动态正文及 API 路由
-├── public/               # 图片、字体与图标等静态资源
-├── styles/               # 全局、Notion 正文与代码样式
-├── tests/                # 内容模型与后端回归检查
-├── .env.example          # 环境变量模板
-├── blog.config.js        # 站点与可选服务配置
-├── next.config.js        # 语言路由、构建与图片配置
-└── next-sitemap.config.js
+│   ├── notion/          # 官方 API、转换、内容规则、缓存和历史地址
+│   ├── search.js        # 搜索范围、匹配与随机抽样
+│   ├── lang.js          # 界面文字
+│   ├── siteAvailability.js
+│   └── rss.js
+├── pages/
+│   ├── api/             # 查询与通知接口
+│   ├── [slug].js        # 正文与历史地址解析
+│   ├── s/[subpage].js   # Notion 子页面
+│   ├── tag/[tag].js     # 标签筛选
+│   └── page/[page].js   # 列表分页
+├── public/              # 封面、图标、状态插图、评论打包脚本
+├── styles/              # 全局、正文、代码与进度条样式
+├── tests/               # Node.js 回归测试
+├── .github/workflows/   # 定时部署 Hook
+├── .env.example
+├── blog.config.js
+├── next.config.js
+├── next-sitemap.config.js
+├── package.json
+└── pnpm-lock.yaml
 ```
 
-## 搜索
-
-搜索页只收录当前语言已发布的 `Post`、`Note`、`Project`。未输入关键词时随机显示最多 10 条；输入关键词后，在完整列表的标题、摘要和标签中匹配，结果超过 20 条可继续加载。标签页使用相同的内容范围。分享预览使用本站默认封面，不再依赖外部图片生成服务。
-
-## 可选服务与当前限制
-
-- 评论组件支持 Utterances 与 SupaComments；统计脚本支持 Google Analytics、Ackee、Umami 和 Cloudflare Insights。需要在 `blog.config.js` 中填写对应服务配置，代码集成不代表服务已经可用。
-- 联系表单通过 Telegram Bot 发送消息，需要 `TELEGRAM_TOKEN` 和自己的 `telegramChatId`。这是可选通知功能，不是文章发布流程的一部分。
-- `/search` 当前随机选取当前语言的最多 10 条已发布内容，在浏览器中匹配标题、摘要和标签；不提供全部正文的全文搜索。
-- 官方 API 转换层支持常用正文块，但不支持嵌入数据库等未列入转换规则的块。遇到未支持的块会报错，避免静默截断正文。
-- Notion 页面的 full-width 设置未映射到当前官方 API 转换层，默认使用普通阅读宽度。
-
-## 贡献
-
-欢迎通过 [Issues](https://github.com/XinzheGao/Xinzhe.Blog/issues) 反馈问题，或提交 Pull Request。涉及内容模型、正文转换或路由的修改，请附上复现方式并运行相关回归检查；界面修改请说明页面与语言场景。
+`node_modules` 是本地依赖，`.next` 是构建产物，两者不提交到 Git。文章正文来自 Notion，仓库外的本地草稿和迁移记录不参与当前网站取数。
 
 ## 致谢与许可证
 
-本项目基于 [Notionic](https://github.com/izuolan/notionic) 定制，并使用 [React Notion X](https://github.com/NotionX/react-notion-x) 及其他开源依赖。
+感谢 [Notionic](https://github.com/izuolan/notionic)、[React Notion X](https://github.com/NotionX/react-notion-x) 及相关开源项目。
 
-代码采用 [MIT License](LICENSE)，保留原项目版权声明。
+代码采用 [MIT License](LICENSE)，保留原项目版权声明。欢迎提交 Issue 或 Pull Request；涉及取数、正文转换、搜索和路由的修改，请附复现方式并运行相关测试。
