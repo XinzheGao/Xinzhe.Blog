@@ -30,6 +30,7 @@ const Gtag = dynamic(() => import('@/components/Common/Gtag'), { ssr: false })
 function MyApp({ Component, pageProps }) {
   // https://github.com/vercel/next.js/blob/canary/examples/with-loading/pages/_app.js
   const router = useRouter()
+  const showChrome = !['/maintenance', '/status-preview'].includes(router.pathname)
 
   useEffect(() => {
     const handleStart = (url) => {
@@ -62,7 +63,7 @@ function MyApp({ Component, pageProps }) {
       )}
       {BLOG.isProd && BLOG?.analytics?.provider === 'ga' && <Gtag />}
       <ThemeProvider attribute='class' enableSystem={true} defaultTheme='system'>
-        {router.pathname !== '/maintenance' && <Header
+        {showChrome && <Header
           navBarTitle={pageProps.post ? pageProps.post.title : null}
           fullWidth={pageProps.post ? pageProps.post.fullWidth : false}
         />}
@@ -75,7 +76,7 @@ function MyApp({ Component, pageProps }) {
               <Component {...pageProps} />
             </div>
         </TransitionEffect>
-        {router.pathname !== '/maintenance' && <Footer fullWidth={pageProps.post ? pageProps.post.fullWidth : false} />}
+        {showChrome && <Footer fullWidth={pageProps.post ? pageProps.post.fullWidth : false} />}
       </ThemeProvider>
     </>
   )

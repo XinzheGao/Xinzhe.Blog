@@ -1,3 +1,5 @@
+const { maintenanceLocales } = require('./lib/siteAvailability')
+
 module.exports = {
   i18n: {
     locales: ['en', 'zh', 'ja'],
@@ -33,8 +35,9 @@ module.exports = {
   async rewrites() {
     return {
       beforeFiles: [
-        { source: '/en/:path*', destination: '/en/maintenance', locale: false },
-        { source: '/ja/:path*', destination: '/ja/maintenance', locale: false }
+        ...maintenanceLocales.map((locale) => ({
+          source: `/${locale}/:path*`, destination: `/${locale}/maintenance`, locale: false
+        }))
       ]
     }
   }
