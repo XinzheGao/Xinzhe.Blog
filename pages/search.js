@@ -1,19 +1,19 @@
 import BLOG from '@/blog.config'
 import { getContents, getAllTagsFromPosts } from '@/lib/notion'
+import { selectSearchContents, randomContents } from '@/lib/search'
 import SearchLayout from '@/layouts/search'
 
-export default function search({ tags, posts }) {
-  return <SearchLayout tags={tags} posts={posts} />
+export default function Search({ tags, posts, initialPosts }) {
+  return <SearchLayout tags={tags} posts={posts} initialPosts={initialPosts} />
 }
+
 export async function getStaticProps({ locale }) {
-  const posts = await getContents({ language: locale || '' })
-  const shuffledPosts = posts.sort(() => Math.random() - 0.5)
-  const limitedPosts = shuffledPosts.slice(0, 10)
-  const tags = getAllTagsFromPosts(posts)
+  const posts = selectSearchContents(await getContents({ language: locale || BLOG.lang }))
   return {
     props: {
-      tags,
-      posts: limitedPosts
+      tags: getAllTagsFromPosts(posts),
+      posts,
+      initialPosts: randomContents(posts)
     },
     revalidate: BLOG.notionRevalidateSeconds
   }

@@ -215,10 +215,10 @@ pnpm start
 后端与内容模型的回归检查使用 Node.js 内置测试运行器：
 
 ```bash
-node --test tests/content-schema.test.cjs tests/notion-backend.test.cjs tests/notion-toc.test.cjs
+node --test tests/*.test.cjs
 ```
 
-测试覆盖属性与正文块转换、分页读取、缓存行为、发布条件、子页面访问边界、自动地址、历史跳转、多语言关联、日期显示及目录生成。测试中的 API 响应通过模拟提供，不需要真实 Notion 令牌；真实数据与线上部署仍需单独验证。
+测试覆盖属性与正文块转换、分页读取、缓存行为、发布条件、子页面访问边界、自动地址、历史跳转、多语言关联、日期显示及目录生成、搜索范围和随机展示。测试中的 API 响应通过模拟提供，不需要真实 Notion 令牌；真实数据与线上部署仍需单独验证。
 
 ## 项目结构
 
@@ -240,6 +240,10 @@ node --test tests/content-schema.test.cjs tests/notion-backend.test.cjs tests/no
 ├── next.config.js        # 语言路由、构建与图片配置
 └── next-sitemap.config.js
 ```
+
+## 搜索
+
+搜索页只收录当前语言已发布的 `Post`、`Note`、`Project`。未输入关键词时随机显示最多 10 条；输入关键词后，在完整列表的标题、摘要和标签中匹配，结果超过 20 条可继续加载。标签页使用相同的内容范围。分享预览使用本站默认封面，不再依赖外部图片生成服务。
 
 ## 可选服务与当前限制
 

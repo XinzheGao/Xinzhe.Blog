@@ -31,7 +31,6 @@ const BLOG = {
   },
   previewImagesEnabled: true,
   autoCollapsedNavBar: false, // The automatically collapsed navigation bar 
-  ogImageGenerateHost: 'og-zl.vercel.app', // The link to generate OG image, don't end with a slash
   defaultCover: '/cover.png',
   socialLink: {
     twitter: '',
@@ -43,7 +42,6 @@ const BLOG = {
     googleSiteVerification: '' // Remove the value or replace it with your own google site verification code
   },
   notionPageId: process.env.NOTION_PAGE_ID, // DO NOT CHANGE THIS! Edit .env file!
-  notionSpacesId: process.env.NOTION_SPACES_ID, // DO NOT CHANGE THIS! Edit .env file!
   notionDataSourceId: process.env.NOTION_DATA_SOURCE_ID, // Optional for a database with one data source
   notionRevalidateSeconds, // Cache TTL and ISR refresh interval (default 60 seconds)
   notionDomain: 'izuolan.notion.site',

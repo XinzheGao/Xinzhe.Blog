@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { randomContents, searchContents } from '@/lib/search'
 import BlogPost from '@/components/BlogPost'
 import Container from '@/components/Container'
 import Tags from '@/components/Common/Tags'
@@ -6,41 +7,25 @@ import PropTypes from 'prop-types'
 import { lang } from '@/lib/lang'
 import { useRouter } from 'next/router'
 
-const SearchLayout = ({ tags, posts, currentTag }) => {
+const SearchLayout = ({ tags, posts = [], initialPosts = [], currentTag }) => {
   const [searchValue, setSearchValue] = useState('')
+  const [suggestions, setSuggestions] = useState(initialPosts)
+  const [visibleCount, setVisibleCount] = useState(20)
   const { locale } = useRouter()
   const t = lang[locale]
+  const keyword = searchValue.trim()
 
-  let filteredBlogPosts = []
-  if (posts) {
-    filteredBlogPosts = posts.filter((post) => {
-      const tagContent = post.tags ? post.tags.join(' ') : ''
-      const searchContent = post.title + post.summary + tagContent
-      return searchContent.toLowerCase().includes(searchValue.toLowerCase())
-    })
-  }
-
-  // 新增状态变量 showTags，用于控制是否显示标签
-  const [showTags, setShowTags] = useState(true)
-
-  // 在搜索结果发生变化时，更新 showTags 状态
   useEffect(() => {
-    // 只有当搜索框中有输入时，才更新 showTags 状态
-    if (searchValue !== '') {
-      if (filteredBlogPosts.length > 0) {
-        setShowTags(false)
-      } else {
-        setShowTags(true)
-      }
-    } else {
-      // 当搜索框为空时，根据 currentTag 的值来更新 showTags 状态
-      if (currentTag) {
-        setShowTags(false)
-      } else {
-        setShowTags(true)
-      }
-    }
-  }, [filteredBlogPosts, searchValue, currentTag])
+    if (!currentTag) setSuggestions(randomContents(posts))
+    setSearchValue('')
+    setVisibleCount(20)
+  }, [posts, currentTag])
+
+  const filteredBlogPosts = keyword ? searchContents(posts, keyword) : posts
+  const displayedPosts = !keyword && !currentTag
+    ? suggestions
+    : filteredBlogPosts.slice(0, visibleCount)
+  const showTags = !currentTag && (!keyword || !filteredBlogPosts.length)
 
   return (
     <Container>
@@ -53,7 +38,12 @@ const SearchLayout = ({ tags, posts, currentTag }) => {
               : `${t.SEARCH.PLACEHOLDER}`
           }
           className='w-full bg-white dark:bg-gray-600 shadow-md rounded-lg outline-none focus:shadow p-3'
-          onChange={(e) => setSearchValue(e.target.value)}
+          aria-label={t.SEARCH.PLACEHOLDER}
+          value={searchValue}
+          onChange={(e) => {
+            setSearchValue(e.target.value)
+            setVisibleCount(20)
+          }}
         />
         <svg
           className='absolute right-3 top-3 h-5 w-5 text-gray-400'
@@ -71,16 +61,24 @@ const SearchLayout = ({ tags, posts, currentTag }) => {
         </svg>
       </div>
       <div className='article-container my-8'>
-        {!filteredBlogPosts.length && (
+        {!displayedPosts.length && (
           <p className='text-gray-500 dark:text-gray-300'>
             {t.SEARCH.NOT_FOUND}
           </p>
         )}
-        {/* 只有当 showTags 为 true 时才渲染 Tags 组件 */}
         {showTags && <Tags tags={tags} currentTag={currentTag} />}
-        {filteredBlogPosts.slice(0, 20).map((post) => (
+        {displayedPosts.map((post) => (
           <BlogPost key={post.id} post={post} />
         ))}
+        {(keyword || currentTag) && filteredBlogPosts.length > visibleCount && (
+          <button
+            type='button'
+            onClick={() => setVisibleCount(count => count + 20)}
+            className='rounded-lg bg-gray-100 px-5 py-3 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
+          >
+            {t.SEARCH.LOAD_MORE}
+          </button>
+        )}
       </div>
     </Container>
   )
@@ -88,6 +86,7 @@ const SearchLayout = ({ tags, posts, currentTag }) => {
 SearchLayout.propTypes = {
   posts: PropTypes.array.isRequired,
   tags: PropTypes.object.isRequired,
+  initialPosts: PropTypes.array,
   currentTag: PropTypes.string
 }
 export default SearchLayout
