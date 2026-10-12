@@ -11,6 +11,7 @@ specifiers:
   framer-motion: 6.4.3
   got: ^12.5.3
   husky: ^8.0.1
+  katex: 0.15.6
   next: ^13.2.4
   next-sitemap: ^4.0.6
   next-themes: ^0.1.1
@@ -23,6 +24,8 @@ specifiers:
   preact: ^10.5.15
   prettier: ^2.7.1
   prism-theme-vars: ^0.2.2
+  prismjs: 1.29.0
+  prop-types: 15.8.1
   react: ^18.2.0
   react-dom: ^18.2.0
   react-notion-x: ^6.16.0
@@ -36,6 +39,7 @@ dependencies:
   feed: 4.2.2
   framer-motion: 6.4.3_biqbaboplfbrettd7655fr4n2y
   got: 12.6.0
+  katex: 0.15.6
   next: 13.3.0_biqbaboplfbrettd7655fr4n2y
   next-themes: 0.1.1_yucv4tfv7v7nrkw2uguegj6e7e
   notion-client: 6.16.0
@@ -45,6 +49,8 @@ dependencies:
   p-memoize: 6.0.2
   preact: 10.13.2
   prism-theme-vars: 0.2.4
+  prismjs: 1.29.0
+  prop-types: 15.8.1
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-notion-x: 6.16.0_biqbaboplfbrettd7655fr4n2y

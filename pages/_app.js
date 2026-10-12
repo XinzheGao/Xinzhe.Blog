@@ -62,10 +62,10 @@ function MyApp({ Component, pageProps }) {
       )}
       {BLOG.isProd && BLOG?.analytics?.provider === 'ga' && <Gtag />}
       <ThemeProvider attribute='class' enableSystem={true} defaultTheme='system'>
-        <Header
+        {router.pathname !== '/maintenance' && <Header
           navBarTitle={pageProps.post ? pageProps.post.title : null}
           fullWidth={pageProps.post ? pageProps.post.fullWidth : false}
-        />
+        />}
         <TransitionEffect>
             <div
               className={`min-h-[calc(100vh-14rem)] md:min-h-[calc(100vh-18rem)] ${
@@ -75,7 +75,7 @@ function MyApp({ Component, pageProps }) {
               <Component {...pageProps} />
             </div>
         </TransitionEffect>
-        <Footer fullWidth={pageProps.post ? pageProps.post.fullWidth : false} />
+        {router.pathname !== '/maintenance' && <Footer fullWidth={pageProps.post ? pageProps.post.fullWidth : false} />}
       </ThemeProvider>
     </>
   )

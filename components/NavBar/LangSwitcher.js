@@ -1,28 +1,16 @@
 import { TranslateIcon } from '@heroicons/react/outline'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useState, useRef, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 
 const LangSwitcher = ({ showLangMenu, setShowLangMenu, showMenu, setShowMenu }) => {
   const router = useRouter()
-  const { locale, asPath, pathname, query } = router
+  const { locale, asPath } = router
   const menuRef = useRef(null)
-  const [versions, setVersions] = useState([])
-  useEffect(() => {
-    if (!showLangMenu || !query.slug) return
-    const controller = new AbortController()
-    setVersions([])
-    fetch(`/api/content-languages?slug=${encodeURIComponent(query.slug)}&language=${locale}`, { signal: controller.signal })
-      .then(response => response.ok ? response.json() : { versions: [] })
-      .then(data => setVersions(data.versions || []))
-      .catch(() => {})
-    return () => controller.abort()
-  }, [showLangMenu, query.slug, locale])
 
   const languages = [
     { code: 'zh', name: '中文' },
-    { code: 'en', name: 'English' },
-    { code: 'ja', name: '日本語' }
+    { code: 'en', name: 'English · 维护中' },
+    { code: 'ja', name: '日本語 · 维护中' }
   ]
 
   useEffect(() => {
@@ -64,52 +52,23 @@ const LangSwitcher = ({ showLangMenu, setShowLangMenu, showMenu, setShowMenu }) 
       </button>
       
       {showLangMenu && (
-        <div className="absolute right-0 mt-2 w-28 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
+        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
           <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="language-menu">
-            {languages.map((lang) => {
-              if (query.slug) {
-                const target = versions.find(version => version.language === lang.code)
-                if (!target) return null
-                return (
-                  <div
-                    key={lang.code}
-                    className={`block px-4 py-2 text-sm cursor-pointer ${
-                      locale === lang.code
-                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
-                    role="menuitem"
-                    onClick={() => {
-                      setShowLangMenu(false)
-                      router.push(`/${target.slug}`, `/${target.slug}`, { locale: lang.code })
-                    }}
-                  >
-                    {lang.name}
-                  </div>
-                )
-              } else {
-                return (
-                  <Link
-                    key={lang.code}
-                    href={asPath}
-                    locale={lang.code}
-                    scroll={false}
-                    onClick={() => setShowLangMenu(false)}
-                  >
-                    <div
-                      className={`block px-4 py-2 text-sm cursor-pointer ${
-                        locale === lang.code
-                          ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                      }`}
-                      role="menuitem"
-                    >
-                      {lang.name}
-                    </div>
-                  </Link>
-                )
-              }
-            })}
+            {languages.map((lang) => (
+              <a
+                key={lang.code}
+                href={lang.code === 'zh' ? asPath : `/${lang.code}`}
+                className={`block px-4 py-2 text-sm ${
+                  locale === lang.code
+                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+                role="menuitem"
+                onClick={() => setShowLangMenu(false)}
+              >
+                {lang.name}
+              </a>
+            ))}
           </div>
         </div>
       )}

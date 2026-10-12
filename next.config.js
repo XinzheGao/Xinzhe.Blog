@@ -2,7 +2,7 @@ module.exports = {
   i18n: {
     locales: ['en', 'zh', 'ja'],
     defaultLocale: 'zh',
-    localeDetection: true
+    localeDetection: false
   },
   output: 'standalone',
   // Avoid multiple build workers exhausting one Notion connection's rate limit.
@@ -31,6 +31,11 @@ module.exports = {
     ]
   },
   async rewrites() {
-    return []
+    return {
+      beforeFiles: [
+        { source: '/en/:path*', destination: '/maintenance?language=en', locale: false },
+        { source: '/ja/:path*', destination: '/maintenance?language=ja', locale: false }
+      ]
+    }
   }
 }
