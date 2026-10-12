@@ -33,8 +33,8 @@ module.exports = {
   async rewrites() {
     return {
       beforeFiles: [
-        { source: '/en/:path*', destination: '/maintenance?language=en', locale: false },
-        { source: '/ja/:path*', destination: '/maintenance?language=ja', locale: false }
+        { source: '/en/:path*', destination: '/en/maintenance', locale: false },
+        { source: '/ja/:path*', destination: '/ja/maintenance', locale: false }
       ]
     }
   }

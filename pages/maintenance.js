@@ -2,9 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import StatusPage from '@/components/StatusPage'
 import { maintenanceImages } from '@/lib/statusMessages'
 
-export function getServerSideProps({ query, locale }) {
-  const requested = query.language || locale
-  const language = ['zh', 'en', 'ja'].includes(requested) ? requested : 'zh'
+export function getStaticProps({ locale }) {
+  const language = ['zh', 'en', 'ja'].includes(locale) ? locale : 'zh'
   return { props: { language } }
 }
 
