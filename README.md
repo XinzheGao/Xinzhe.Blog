@@ -10,7 +10,7 @@
 - 英文、日文及书架入口暂时显示维护页，内容和相关实现仍保留。
 - 搜索页默认随机展示 10 条内容，关键词搜索覆盖全部已发布的推文、笔记和项目。
 - 文章地址自动生成，已保存的历史地址继续跳转到新地址。
-- 评论与通知暂未恢复。仓库保留 SupaComments、Utterances 和 Telegram 接口，邮件通知尚未实现。
+- 评论支持免登录提交、直接公开，以及当前浏览器凭证删除。Telegram 和邮件通知尚未恢复。
 
 项目基于 [Notionic](https://github.com/izuolan/notionic) 定制。当前源码主要使用 JavaScript，`package.json` 仍保留部分上游项目元信息。
 
@@ -231,7 +231,11 @@ Open Graph 和 Twitter 分享图片默认使用本站 `/cover.png`，不再依�
 
 联系表单经 `ContactForm → /api/sendtotg → Telegram sendMessage` 转发，需要服务器的 `TELEGRAM_TOKEN` 和配置里的聊天 ID。当前实现没有将私信保存到数据库，并把请求对象直接放进消息 `text`；发送逻辑仍待修整，不能仅凭接口存在认定通知可用。
 
-评论组件按 `blog.config.js` 选择 SupaComments 或 Utterances。当前选择 SupaComments，但 Supabase 地址和匿名密钥为空，文章页仍可能报 `supabaseUrl is required`。本地评论脚本只有中文和英文版本，评论按网页路径关联；恢复历史评论时需要检查旧地址与新地址的对应关系。
+评论组件按 `blog.config.js` 选择 SupaComments 或 Utterances。SupaComments 接入使用 `NEXT_PUBLIC_SUPABASE_URL` 和 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`；配置缺失时不加载评论。当前组件直接访问 Supabase Data API，不再加载 `public/comments` 中的旧打包脚本。只能使用公开 publishable key，不能填写 secret 或 service_role key。
+
+新项目的建表与权限草稿位于 `supabase/comments-setup.sql`，需要单独执行后才能接入。评论按 Notion 页面 ID 关联，提交后直接公开；昵称、正文和时间可公开读取，联系方式和删除凭证哈希不可公开读取。访客不能修改评论，删除需要匹配当前浏览器保存的随机凭证。换设备或清除浏览器存储后，用户需要联系博主处理删除。旧评论不迁移，评论不会触发 Telegram 通知。
+
+执行建表后，用 `supabase/comments-verify.sql` 验证公开读取、联系方式与凭证保护、禁止修改、错误凭证拒绝删除、本人删除；验证数据在事务中回滚，不会留下评论。两项公开环境变量需要在部署前配置并重新构建。前端和数据库的真实交互还需单独验证，Node 单元测试不能代替这些检查。
 
 邮件通知、私信持久化和评论恢复均未实现。统计组件保留 Google Analytics、Ackee、Umami 和 Cloudflare Insights 的选择，当前 `analytics.provider` 为空。
 

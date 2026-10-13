@@ -72,8 +72,9 @@ const BLOG = {
     // support provider: utterances, supacomments
     provider: 'supacomments', // leave it empty if you don't need any comment plugin 评论区
     supaCommentsConfig: {
-      supabaseUrl: '', // The url of your Supabase instance
-      supabaseAnonKey: '' // The anonymous key of your Supabase instance
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      // Browser-safe publishable key; never use a secret or service_role key.
+      supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || ''
     },
     utterancesConfig: {
       repo: ''
