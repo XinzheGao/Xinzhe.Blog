@@ -134,16 +134,16 @@ NOTION_REVALIDATE_SECONDS=60
 pnpm dev
 ```
 
-打开 [localhost:3000](http://localhost:3000)。修改站点信息使用 [`blog.config.js`](blog.config.js)，其中包含标题、作者、域名、描述、时区、分页和可选服务配置。当前日期按 `Asia/Tokyo` 解释。
+打开 [localhost:3000](http://localhost:3000)。修改站点信息使用 [`blog.config.js`](blog.config.js)，其中包含标题、作者、域名、描述、时区、分页和可选服务配置。当前日期按 `Asia/Shanghai` 解释。
 
 ## 网站配置
 
 `blog.config.js` 按网站身份、外观与日期、列表与导航、Notion 连接、联系表单及可选服务组织，注释说明各项用途。
 
 - 内容日期使用 `Asia/Shanghai`。纯日期保留所选年月日，带时区偏移的时间保留原始时刻后按北京时间显示。
-- `appearance` 支持 `auto`、`light`、`dark`，决定首次访问的默认主题；访客手动选择会保存在浏览器中并优先使用。
+- `appearance` 支持 `auto`、`light`、`dark`。自动模式每次打开或刷新时按浏览器的 `prefers-color-scheme` 判断深浅色，并在未手动切换时同步浏览器偏好的变化；手动按钮仅覆盖本次访问，下次加载重新跟随浏览器。
 - `stickyNavBar` 控制粘性导航。`notionDatabaseId` 优先读取 `NOTION_DATABASE_ID`，旧部署的 `NOTION_PAGE_ID` 仍兼容。
-- 联系表单需要服务器环境变量 `TELEGRAM_TOKEN`；`TELEGRAM_CHAT_ID` 可覆盖默认接收聊天 ID。Chat ID 已移出代码，上线前需在部署环境中配置；本地开发从被忽略的环境文件读取。
+- 联系表单需要服务器环境变量 `TELEGRAM_TOKEN`。`TELEGRAM_CHAT_ID` 可选，未设置时继续使用原默认接收聊天 ID。
 
 ## Notion 内容模型
 

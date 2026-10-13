@@ -25,7 +25,7 @@ const BLOG = {
   // 外观与日期
   lang: 'zh', // 主语言
   timezone: 'Asia/Shanghai', // 内容日期统一使用北京时间
-  appearance: 'auto', // 默认主题：light、dark、auto（跟随系统）；访客选择优先
+  appearance: 'auto', // 默认主题：light、dark、auto；auto 每次加载跟随浏览器偏好
   font: 'sans-serif', // 字体：sans-serif（无衬线）或 serif（衬线）
   lightBackground: '#F6F8FA', // 浅色背景
   darkBackground: '#212936', // 深色背景

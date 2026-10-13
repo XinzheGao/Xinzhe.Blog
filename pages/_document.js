@@ -1,5 +1,6 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import BLOG from '@/blog.config'
+import { browserThemeScript } from '@/lib/browserTheme'
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -37,18 +38,7 @@ class MyDocument extends Document {
               />
               <script
                 dangerouslySetInnerHTML={{
-                  __html: `
-  (function() {
-    try {
-      var theme = localStorage.getItem('theme');
-      if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    } catch(e) {}
-  })();
-                  `,
+                  __html: browserThemeScript
                 }}
               />
             </>
