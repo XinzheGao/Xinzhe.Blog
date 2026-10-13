@@ -114,7 +114,7 @@ const NavBar = ({ showMenu, setShowMenu, showLangMenu, setShowLangMenu }) => {
 
       <div className='nav-func-btn flex items-center'>
         <ThemeSwitcher />
-        <LangSwitcher showLangMenu={showLangMenu} setShowLangMenu={setShowLangMenu} showMenu={showMenu} setShowMenu={setShowMenu} />
+        <LangSwitcher showLangMenu={showLangMenu} setShowLangMenu={setShowLangMenu} setShowMenu={setShowMenu} />
       </div>
 
       {/* Mobile Phone Menu */}

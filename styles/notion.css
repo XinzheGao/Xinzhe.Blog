@@ -87,7 +87,6 @@ svg + .notion-page-title-text {
   animation: toc-fade-in-animation 0.5s ease-in;
 }
 .notion-table-of-contents {
-  /* @apply 2xl:max-w-xs 2xl:fixed 2xl:z-10 2xl:top-40 2xl:inset-x-3/4; */
   @apply bg-day dark:bg-night;
 }
 .notion-table-of-contents-item {
@@ -133,36 +132,11 @@ svg + .notion-page-title-text {
   @apply text-gray-500 dark:text-gray-400;
 }
 
-.notion-collection {
-  @apply max-w-full;
-}
-.notion-collection > .notion-collection-header {
-  @apply px-0 !important;
-}
-.notion-collection > .notion-table {
-  @apply max-w-full !important;
-}
-.notion-collection > .notion-table > .notion-table-view {
-  @apply px-0 !important;
-}
-.notion-collection-view-type {
-  @apply hidden;
-}
-.notion-collection-row {
-  @apply hidden;
-}
-
 
 /* 定制化样式 */
 /* 友链头像预览，修复只显示一半的图片 */
 .lazy-image-real {
   top: 0;
-}
-
-/* 友链头像设置圆角，设置图片高度（修复不是方形图片会变成椭圆的问题） */
-.notion-collection-card-property .notion-page-title-icon {
-  border-radius: 50%; /* 设置圆角半径为图片的短边的一半 */
-  height: 22px;
 }
 
 /* 友链卡片的友链名称 */
@@ -175,27 +149,11 @@ svg + .notion-page-title-text {
   line-height: 2rem;
 }
 
-/* 友链链接设置 */
-input.nested-form-link.notion-link {
-  color: #5979EE;
-  /* color: rgb(238,122,101);
-  color: rgb(77,77,245);
-  color: #3366FF; */
-  text-decoration: none; /* 取消下划线 */
-}
-
-/* 友链卡片整体设置 */
-a.notion-collection-card.notion-collection-card-size-small {
-  background-color: rgba(255, 255, 255, 0.3); /* 设置友链卡片透明度 */
-  border-radius: 20px; /* 友链卡片的圆角设置 */
-}
-
 /* 评论框调整 */
 /* 评论内容 */
 textarea#comment {
   height: 120px;
   border-radius: 20px;
-  /* background-color: #e5e7ebad; */
   box-shadow: 0 0 0 1px hsla(0,0%,6%,.1), 0 2px 4px hsla(0,0%,6%,.1);
 }
 /* 评论邮箱 */
@@ -204,7 +162,6 @@ input#mail {
   padding-bottom: 4px;
   height: 38px;
   border-radius: 10px;
-  /* background-color: #e5e7ebad; */
   box-shadow: 0 0 0 1px hsla(0,0%,6%,.1), 0 2px 4px hsla(0,0%,6%,.1);
 }
 /* 评论名称 */
@@ -213,22 +170,8 @@ input#name {
   padding-bottom: 4px;
   height: 38px;
   border-radius: 10px;
-  /* background-color: #e5e7ebad; */
   box-shadow: 0 0 0 1px hsla(0,0%,6%,.1), 0 2px 4px hsla(0,0%,6%,.1);
 }
-/* 提交按钮
-button.inline-block.bg-gray-100.dark\:bg-gray-700.hover\:bg-gray-200.dark\:hover\:bg-gray-600.text-center.rounded-lg.outline-none.transition.duration-100.px-8.py-3 {
-  @apply bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 hover:text-gray-600 dark:hover:text-gray-300;
-  background-color: #e5e7ebad;
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-top: 12px;
-  padding-bottom: 12px;
-  height: 48px;
-}
-p.text-gray-400.h-5 {
-  color: #4d5562ea;
-} */
 
 /* 联系页面文本框 */
 textarea#message {
@@ -243,9 +186,6 @@ code[class*=language-], div[class*=language-], pre[class*=language-] {
   color: #E4EAF1 !important;   /* 非关键字代码颜色 */
 }
 pre.notion-code {
-  /* background-color: #4D5562 !important;
-  background-color: #2f425fd3 !important;
-  background-color: #020b19d0 !important; */
   background-color: #09111E !important;  /* 代码块颜色 */
   border-radius: 15px;   /* 代码块圆角 */
 }

@@ -2,7 +2,7 @@ import { TranslateIcon } from '@heroicons/react/outline'
 import { useRouter } from 'next/router'
 import { useRef, useEffect } from 'react'
 
-const LangSwitcher = ({ showLangMenu, setShowLangMenu, showMenu, setShowMenu }) => {
+const LangSwitcher = ({ showLangMenu, setShowLangMenu, setShowMenu }) => {
   const router = useRouter()
   const { locale, asPath } = router
   const menuRef = useRef(null)

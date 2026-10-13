@@ -12,9 +12,9 @@
     "url": "https://github.com/XinzheGao/Xinzhe.Blog.git"
   },
   "author": {
-    "name": "Zuo Lan",
-    "email": "i@zuolan.me",
-    "url": "https://zuolan.me"
+    "name": "Xinzhe",
+    "email": "gao-yiqian@outlook.com",
+    "url": "https://xinzhe.dev"
   },
   "scripts": {
     "dev": "next dev",
@@ -22,8 +22,7 @@
     "start": "next start",
     "format": "prettier --write .",
     "lint": "next lint",
-    "postbuild": "next-sitemap --config next-sitemap.config.js",
-    "prepare": "husky install"
+    "postbuild": "next-sitemap --config next-sitemap.config.js"
   },
   "dependencies": {
     "dayjs": "^1.11.7",
@@ -43,8 +42,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-notion-x": "^6.16.0",
-    "sharp": "^0.30.5",
-    "use-ackee": "^3.0.0"
+    "sharp": "^0.30.5"
   },
   "devDependencies": {
     "@heroicons/react": "^1.0.5",
@@ -52,7 +50,6 @@
     "autoprefixer": "^10.4.14",
     "eslint": "^8.36.0",
     "eslint-config-next": "^13.2.4",
-    "husky": "^8.0.1",
     "next-sitemap": "^4.0.6",
     "postcss": "^8.4.21",
     "prettier": "^2.7.1",

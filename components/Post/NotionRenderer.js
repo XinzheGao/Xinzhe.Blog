@@ -35,10 +35,6 @@ const components = {
       return module.Code
     })
   }),
-  // Database block
-  Collection: dynamic(() => {
-    return import('react-notion-x/build/third-party/collection').then(module => module.Collection)
-  }),
   // Equation block & inline variant
   Equation: dynamic(() => {
     return import('react-notion-x/build/third-party/equation').then(module => module.Equation)
@@ -56,7 +52,6 @@ export default function NotionRenderer (props) {
   const { locale } = useRouter()
   if (!props.blockMap) return null
   const mapPageUrl = (id) => {
-    // console.log('mapPageUrl', BLOG.lang.split('-')[0])
     if (locale === BLOG.lang.split('-')[0]) {
       return '/s/' + id.replace(/-/g, '')
     } else {

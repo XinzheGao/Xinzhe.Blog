@@ -58,37 +58,13 @@ const BLOG = {
   // 联系表单
   telegramToken: process.env.TELEGRAM_TOKEN, // 联系表单机器人凭据，来自服务器环境变量
   telegramChatId: process.env.TELEGRAM_CHAT_ID || '7087670492', // 默认接收聊天 ID，可用环境变量覆盖
-  // 可选访问统计
-  analytics: {
-    provider: '', // ga、ackee、umami、cf；留空关闭统计
-    ackeeConfig: {
-      tracker: '', // Ackee 脚本地址
-      dataAckeeServer: '', // Ackee 服务地址，末尾不加斜杠
-      domainId: '' // Ackee 网站 ID
-    },
-    cfConfig: {
-      scriptUrl: 'https://static.cloudflareinsights.com/beacon.min.js', // 统计脚本地址
-      token: '' // Cloudflare beacon 的 JSON 配置字符串
-    },
-    gaConfig: {
-      measurementId: '' // Google Analytics 衡量 ID
-    },
-    umamiConfig: {
-      scriptUrl: '', // 统计脚本地址
-      websiteId: '' // Umami 网站 ID
-    }
-  },
   comment: {
-    provider: '', // utterances、supacomments；留空关闭评论
+    provider: '', // supacomments；留空关闭评论
     supaCommentsConfig: {
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
       // 浏览器公开密钥，不能使用 secret 或 service_role 密钥。
       supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || ''
-    },
-    utterancesConfig: {
-      repo: ''
     }
-  },
-  isProd: process.env.VERCEL_ENV === 'production' // 是否为 Vercel 正式生产环境
+  }
 }
 module.exports = BLOG

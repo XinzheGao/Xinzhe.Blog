@@ -11,10 +11,6 @@ function Contact() {
   const sentMessage = async (event) => {
     event.preventDefault()
     setSubmitting(true)
-    // setTimeout(() => {
-    //   setSubmitting(false)
-    //   setShowResult(true)
-    // }, 3000)
 
     const tgUrl = '/api/sendtotg'
     const res = await fetch(tgUrl, {
@@ -28,10 +24,8 @@ function Contact() {
       },
       method: 'POST'
     })
-    // await res.json()
     const result = await res.json()
     const status = result.status
-    console.log('status:', status)
     if (status === 'Success') {
       setSubmitting(false)
       setShowResult(true)

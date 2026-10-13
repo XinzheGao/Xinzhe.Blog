@@ -16,7 +16,6 @@ export default async function sendtotg(req, res) {
   }
   const response = await fetch(tgUrl, init)
   if (response.status === 200) {
-    // const respText = await response.text()
     res.send({ status: 'Success' })
   } else {
     res.send({ status: 'Fail to send message to Telegram' })

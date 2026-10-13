@@ -29,14 +29,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [...fontFamily.sans, ...fontSansCJK],
-        serif: [...fontFamily.serif, ...fontSerifCJK],
-        noEmoji: [
-          'ui-sans-serif',
-          'system-ui',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'sans-serif'
-        ]
+        serif: [...fontFamily.serif, ...fontSerifCJK]
       }
     }
   },

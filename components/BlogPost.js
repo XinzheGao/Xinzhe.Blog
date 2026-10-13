@@ -29,7 +29,6 @@ const BlogPost = ({ post }) => {
               </span>
             </header>
             <p className='font-light hidden md:block leading-8 text-gray-700 dark:text-gray-400'>{post.summary}</p>
-            {/* w-4/5  */}
           </div>
         </article>
       </Link>

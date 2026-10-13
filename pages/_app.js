@@ -3,8 +3,6 @@ import 'katex/dist/katex.min.css'
 import '@/styles/globals.css'
 import '@/styles/notion.css'
 import BLOG from '@/blog.config'
-import dynamic from 'next/dynamic'
-import Scripts from '@/components/Common/Scripts'
 import { ThemeProvider } from 'next-themes'
 import TransitionEffect from '@/components/Common/TransitionEffect'
 import { useRouter } from 'next/router'
@@ -14,9 +12,6 @@ import '@/styles/nprogress.css'
 import Header from '@/components/NavBar/Header'
 import Footer from '@/components/NavBar/Footer'
 
-const Ackee = dynamic(() => import('@/components/Common/Ackee'), { ssr: false })
-const Gtag = dynamic(() => import('@/components/Common/Gtag'), { ssr: false })
-
 function MyApp({ Component, pageProps }) {
   // https://github.com/vercel/next.js/blob/canary/examples/with-loading/pages/_app.js
   const router = useRouter()
@@ -24,7 +19,6 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     const handleStart = (url) => {
-      // console.log(`Loading: ${url}`)
       NProgress.start()
     }
     const handleStop = () => {
@@ -44,14 +38,6 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <Scripts />
-      {BLOG.isProd && BLOG?.analytics?.provider === 'ackee' && (
-        <Ackee
-          ackeeServerUrl={BLOG.analytics.ackeeConfig.dataAckeeServer}
-          ackeeDomainId={BLOG.analytics.ackeeConfig.domainId}
-        />
-      )}
-      {BLOG.isProd && BLOG?.analytics?.provider === 'ga' && <Gtag />}
       <ThemeProvider attribute='class' enableSystem={true} defaultTheme={BLOG.appearance === 'auto' ? 'system' : BLOG.appearance}>
         {showChrome && <Header
           navBarTitle={pageProps.post ? pageProps.post.title : null}
