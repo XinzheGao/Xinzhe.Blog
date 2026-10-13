@@ -70,7 +70,7 @@ const BLOG = {
   },
   comment: {
     // support provider: utterances, supacomments
-    provider: 'supacomments', // leave it empty if you don't need any comment plugin 评论区
+    provider: '', // leave it empty if you don't need any comment plugin 评论区
     supaCommentsConfig: {
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
       // Browser-safe publishable key; never use a secret or service_role key.
