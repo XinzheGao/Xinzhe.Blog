@@ -233,7 +233,7 @@ React 页面 → Vercel → xinzhe.dev
 ## 致谢与许可证
 
 - [NotionNext](https://github.com/notionnext-org/NotionNext)：是我学习搭建个人网站的起点。看到这个项目后，我决定做一个属于自己的网站，并在学习过程中收获了许多经验。
-- [Anjhon](https://www.anjhon.top)：浏览网页时偶然发现了他的个人主页，受到启发，随后参考他的站点继续学习，逐步搭建了现在的网站。
+- [Anjhon](https://www.anjhon.top)：上网冲浪时偶然发现了Anjhon的个人主页，受到启发，随后参考站点继续学习，逐步搭建了现在的网站。
 - [Notionic](https://github.com/izuolan/notionic)：本项目的上游基础，感谢 Zuo Lan 的开源工作。
 - [Nobelium](https://github.com/craigary/nobelium)：Notionic 的上游项目。
 - [React Notion X](https://github.com/NotionX/react-notion-x)：Notion 正文渲染与相关工具。
