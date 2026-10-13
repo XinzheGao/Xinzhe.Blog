@@ -114,7 +114,7 @@ cp .env.example .env.local
 
 ```dotenv
 NOTION_API_TOKEN=your_internal_connection_token
-NOTION_PAGE_ID=your_database_id
+NOTION_DATABASE_ID=your_database_id
 NOTION_DATA_SOURCE_ID=
 NOTION_REVALIDATE_SECONDS=60
 ```
@@ -122,7 +122,7 @@ NOTION_REVALIDATE_SECONDS=60
 | 变量 | 说明 |
 | --- | --- |
 | `NOTION_API_TOKEN` | 必需，官方 Notion 内部连接令牌 |
-| `NOTION_PAGE_ID` | 数据库 ID；未显式指定数据源时必需 |
+| `NOTION_DATABASE_ID` | 数据库 ID；兼容旧变量 `NOTION_PAGE_ID`，两者都有时以新变量为准 |
 | `NOTION_DATA_SOURCE_ID` | 可选；数据库含多个数据源时必须指定 |
 | `NOTION_REVALIDATE_SECONDS` | 缓存与 ISR 间隔，整数 `1–300`，默认 `60` 秒 |
 
@@ -135,6 +135,15 @@ pnpm dev
 ```
 
 打开 [localhost:3000](http://localhost:3000)。修改站点信息使用 [`blog.config.js`](blog.config.js)，其中包含标题、作者、域名、描述、时区、分页和可选服务配置。当前日期按 `Asia/Tokyo` 解释。
+
+## 网站配置
+
+`blog.config.js` 按网站身份、外观与日期、列表与导航、Notion 连接、联系表单及可选服务组织，注释说明各项用途。
+
+- 内容日期使用 `Asia/Shanghai`。纯日期保留所选年月日，带时区偏移的时间保留原始时刻后按北京时间显示。
+- `appearance` 支持 `auto`、`light`、`dark`，决定首次访问的默认主题；访客手动选择会保存在浏览器中并优先使用。
+- `stickyNavBar` 控制粘性导航。`notionDatabaseId` 优先读取 `NOTION_DATABASE_ID`，旧部署的 `NOTION_PAGE_ID` 仍兼容。
+- 联系表单需要服务器环境变量 `TELEGRAM_TOKEN`；`TELEGRAM_CHAT_ID` 可覆盖默认接收聊天 ID。Chat ID 已移出代码，上线前需在部署环境中配置；本地开发从被忽略的环境文件读取。
 
 ## Notion 内容模型
 
@@ -227,9 +236,9 @@ Open Graph 和 Twitter 分享图片默认使用本站 `/cover.png`，不再依�
 | --- | --- |
 | `/api/check-slug?slug=...` | 检查已发布内容的当前自动地址，返回 `{ found }`；不解析历史别名 |
 | `/api/content-languages?slug=...&language=zh` | 根据原文关联取得已发布语言版本，返回 `{ versions }` |
-| `/api/sendtotg` | 接收联系表单或评论通知，调用 Telegram Bot API |
+| `/api/sendtotg` | 接收联系表单，调用 Telegram Bot API |
 
-联系表单经 `ContactForm → /api/sendtotg → Telegram sendMessage` 转发，需要服务器的 `TELEGRAM_TOKEN` 和配置里的聊天 ID。当前实现没有将私信保存到数据库，并把请求对象直接放进消息 `text`；发送逻辑仍待修整，不能仅凭接口存在认定通知可用。
+联系表单经 `ContactForm → /api/sendtotg → Telegram sendMessage` 转发，需要服务器环境变量 `TELEGRAM_TOKEN`；`TELEGRAM_CHAT_ID` 可覆盖默认接收聊天 ID。当前实现没有将私信保存到数据库，并把请求对象直接放进消息 `text`；发送逻辑仍待修整，不能仅凭接口存在认定通知可用。
 
 评论组件按 `blog.config.js` 选择 SupaComments 或 Utterances。SupaComments 接入使用 `NEXT_PUBLIC_SUPABASE_URL` 和 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`；配置缺失时不加载评论。当前组件直接访问 Supabase Data API，不再加载 `public/comments` 中的旧打包脚本。只能使用公开 publishable key，不能填写 secret 或 service_role key。
 

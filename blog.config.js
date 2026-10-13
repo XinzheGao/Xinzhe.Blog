@@ -1,8 +1,17 @@
-const notionRevalidateSeconds = Number(process.env.NOTION_REVALIDATE_SECONDS || 60)
-if (!Number.isInteger(notionRevalidateSeconds) || notionRevalidateSeconds < 1 || notionRevalidateSeconds > 300) {
-  throw new Error('NOTION_REVALIDATE_SECONDS must be an integer between 1 and 300')
+const notionRevalidateSeconds = Number(
+  process.env.NOTION_REVALIDATE_SECONDS || 60
+)
+if (
+  !Number.isInteger(notionRevalidateSeconds) ||
+  notionRevalidateSeconds < 1 ||
+  notionRevalidateSeconds > 300
+) {
+  throw new Error(
+    'NOTION_REVALIDATE_SECONDS must be an integer between 1 and 300'
+  )
 }
 
+// 网站身份与栏目
 const BLOG = {
   title: 'Xinzhe',
   author: 'Xinzhe',
@@ -13,74 +22,73 @@ const BLOG = {
   projects: 'Project',
   books: 'Books',
   description: 'Dream it. Chase it. Code it.',
-  lang: 'zh', // Primary site language
-  timezone: 'Asia/Tokyo', // See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for all options.
-  appearance: 'auto', // ['light', 'dark', 'auto'],
-  font: 'sans-serif', // ['sans-serif', 'serif']
-  lightBackground: '#F6F8FA', // use hex value, don't forget '#' e.g #fffefc
-  darkBackground: '#212936', // use hex value, don't forget '#'
-  path: '', // leave this empty unless you want to deploy Notionic in a folder
-  since: 2023, // If leave this empty, current year will be used. 
+  // 外观与日期
+  lang: 'zh', // 主语言
+  timezone: 'Asia/Shanghai', // 内容日期统一使用北京时间
+  appearance: 'auto', // 默认主题：light、dark、auto（跟随系统）；访客选择优先
+  font: 'sans-serif', // 字体：sans-serif（无衬线）或 serif（衬线）
+  lightBackground: '#F6F8FA', // 浅色背景
+  darkBackground: '#212936', // 深色背景
+  path: '', // 路径前缀；部署在域名根目录时留空
+  since: 2023, // 版权起始年；留空则只显示当年
+  // 列表与导航
   postsPerPage: 10,
   sortByDate: true,
   pagesShow: {
     musings: true,
     notes: true,
     projects: true,
-    books: true,
+    books: true
   },
   previewImagesEnabled: true,
-  autoCollapsedNavBar: false, // The automatically collapsed navigation bar 
+  stickyNavBar: true, // 导航栏随滚动保持可见
   defaultCover: '/cover.png',
   socialLink: {
-    twitter: '',
-    github: 'https://github.com/XinzheGao',
-    telegram: ''
+    github: 'https://github.com/XinzheGao'
   },
   seo: {
-    keywords: ['Xinzhe', 'Blog' , '信哲'],
-    googleSiteVerification: '' // Remove the value or replace it with your own google site verification code
+    keywords: ['Xinzhe', 'Blog', '信哲'],
+    googleSiteVerification: '' // Google 网站所有权验证代码；为空则不输出
   },
-  notionPageId: process.env.NOTION_PAGE_ID, // DO NOT CHANGE THIS! Edit .env file!
-  notionDataSourceId: process.env.NOTION_DATA_SOURCE_ID, // Optional for a database with one data source
-  notionRevalidateSeconds, // Cache TTL and ISR refresh interval (default 60 seconds)
-  notionDomain: 'izuolan.notion.site',
-  telegramToken: process.env.TELEGRAM_TOKEN, // The token of your Telegram bot
-  telegramChatId: '7087670492', // The chat id of your Telegram bot
-  telegramChannelUrl: '', // The link of your Telegram channel
-  telegramChannelName: '', // The name of your Telegram channel
+  // Notion 内容连接
+  notionDatabaseId:
+    process.env.NOTION_DATABASE_ID || process.env.NOTION_PAGE_ID, // 优先读取新变量，兼容现有 NOTION_PAGE_ID
+  notionDataSourceId: process.env.NOTION_DATA_SOURCE_ID, // 单数据源数据库可留空
+  notionRevalidateSeconds, // 缓存及 ISR 间隔，默认 60 秒，范围 1～300 秒
+  // 联系表单
+  telegramToken: process.env.TELEGRAM_TOKEN, // 联系表单机器人凭据，来自服务器环境变量
+  telegramChatId: process.env.TELEGRAM_CHAT_ID || '7087670492', // 默认接收聊天 ID，可用环境变量覆盖
+  // 可选访问统计
   analytics: {
-    provider: '', // Currently we support Google Analytics, Ackee, Umami and Cloudflare Insights, please fill with 'ga' or 'ackee' or 'umami' or 'cf', leave it empty to disable it.
+    provider: '', // ga、ackee、umami、cf；留空关闭统计
     ackeeConfig: {
-      tracker: '', // e.g 'https://ackee.example.com/tracker.js'
-      dataAckeeServer: '', // e.g https://ackee.example.com , don't end with a slash
-      domainId: '' // e.g '0e2257a8-54d4-4847-91a1-0311ea48cc7b'
+      tracker: '', // Ackee 脚本地址
+      dataAckeeServer: '', // Ackee 服务地址，末尾不加斜杠
+      domainId: '' // Ackee 网站 ID
     },
     cfConfig: {
-      scriptUrl: 'https://static.cloudflareinsights.com/beacon.min.js', // Default
-      token: '' // Like '{"token": "xxxxxxxxxxxxxxxxxx"}'
+      scriptUrl: 'https://static.cloudflareinsights.com/beacon.min.js', // 统计脚本地址
+      token: '' // Cloudflare beacon 的 JSON 配置字符串
     },
     gaConfig: {
-      measurementId: '' // e.g: G-XXXXXXXXXX
+      measurementId: '' // Google Analytics 衡量 ID
     },
     umamiConfig: {
-      scriptUrl: '', // The url of your Umami script
-      websiteId: '' // The website id of your Umami instance
+      scriptUrl: '', // 统计脚本地址
+      websiteId: '' // Umami 网站 ID
     }
   },
   comment: {
-    // support provider: utterances, supacomments
-    provider: '', // leave it empty if you don't need any comment plugin 评论区
+    provider: '', // utterances、supacomments；留空关闭评论
     supaCommentsConfig: {
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      // Browser-safe publishable key; never use a secret or service_role key.
+      // 浏览器公开密钥，不能使用 secret 或 service_role 密钥。
       supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || ''
     },
     utterancesConfig: {
       repo: ''
     }
   },
-  isProd: process.env.VERCEL_ENV === 'production' // distinguish between development and production environment (ref: https://vercel.com/docs/environment-variables#system-environment-variables)
+  isProd: process.env.VERCEL_ENV === 'production' // 是否为 Vercel 正式生产环境
 }
-// export default BLOG
 module.exports = BLOG

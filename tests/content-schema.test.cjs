@@ -113,7 +113,17 @@ test('saved old addresses survive deletion and shared aliases resolve the reques
 
 test('date-only publication dates retain the chosen day across server timezones', () => {
   const timestamp = contentMetadata(page('book', 'en')).publishedAt
-  assert.equal(formatContentDate(timestamp, 'en', 'Asia/Tokyo'), 'Jan 1, 2025')
-  assert.equal(formatContentDate(timestamp, 'ja', 'Asia/Tokyo'), '2025年1月1日')
+  assert.equal(formatContentDate(timestamp, 'en', 'Asia/Shanghai'), 'Jan 1, 2025')
+  assert.equal(formatContentDate(timestamp, 'ja', 'Asia/Shanghai'), '2025年1月1日')
+  assert.equal(formatContentDate(timestamp, 'zh', 'Asia/Shanghai'), '2025年1月1日')
+})
+
+
+test('timestamps preserve their instant and display the Shanghai day at midnight boundaries', () => {
+  const raw = page('timestamp', 'zh')
+  raw.properties.publishedAt.date = { start: '2025-01-01T00:30:00+09:00' }
+  const timestamp = contentMetadata(raw).publishedAt
+  assert.equal(timestamp, Date.parse('2025-01-01T00:30:00+09:00'))
+  assert.equal(formatContentDate(timestamp), '2024年12月31日')
   assert.equal(formatContentDate(timestamp, 'zh', 'Asia/Tokyo'), '2025年1月1日')
 })

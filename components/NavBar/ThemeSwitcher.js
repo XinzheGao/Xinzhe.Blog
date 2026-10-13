@@ -8,15 +8,11 @@ const ThemeSwitcher = () => {
 
   useEffect(() => {
     setHasMounted(true)
-    setTheme('system')
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('theme')
-    }
   }, [])
 
   if (!hasMounted) return null
 
-  const isDark = (theme === 'system' ? systemTheme === 'dark' : theme === 'dark')
+  const isDark = theme === 'system' ? systemTheme === 'dark' : theme === 'dark'
 
   return (
     <button
@@ -24,7 +20,11 @@ const ThemeSwitcher = () => {
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className='p-2 ml-1 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer rounded-lg dark:text-gray-100'
     >
-      {isDark ? <MoonIcon className='h-5 w-5' /> : <SunIcon className='h-5 w-5' />}
+      {isDark ? (
+        <MoonIcon className='h-5 w-5' />
+      ) : (
+        <SunIcon className='h-5 w-5' />
+      )}
     </button>
   )
 }

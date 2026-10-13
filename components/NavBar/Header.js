@@ -162,7 +162,7 @@ const NavBar = ({ showMenu, setShowMenu, showLangMenu, setShowLangMenu }) => {
 const Header = ({ navBarTitle, fullWidth }) => {
   const [showMenu, setShowMenu] = useState(false)
   const [showLangMenu, setShowLangMenu] = useState(false)
-  const useSticky = !BLOG.autoCollapsedNavBar
+  const useSticky = BLOG.stickyNavBar
   const navRef = useRef(/** @type {HTMLDivElement} */ undefined)
   const sentinelRef = useRef(/** @type {HTMLDivElement} */ undefined)
   const [showTitle, setShowTitle] = useState(true)

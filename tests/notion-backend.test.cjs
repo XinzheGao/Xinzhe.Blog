@@ -55,7 +55,7 @@ test('official API pagination and visibility prevent publishing drafts or unrela
   const privatePage = '44444444-4444-4444-4444-444444444444'
   const child = '55555555-5555-5555-5555-555555555555'
   const BLOG = require('../blog.config')
-  BLOG.notionPageId = root
+  BLOG.notionDatabaseId = root
   process.env.NOTION_API_TOKEN = 'test-placeholder'
   const originalFetch = global.fetch
   const seen = []

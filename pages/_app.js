@@ -52,7 +52,7 @@ function MyApp({ Component, pageProps }) {
         />
       )}
       {BLOG.isProd && BLOG?.analytics?.provider === 'ga' && <Gtag />}
-      <ThemeProvider attribute='class' enableSystem={true} defaultTheme='system'>
+      <ThemeProvider attribute='class' enableSystem={true} defaultTheme={BLOG.appearance === 'auto' ? 'system' : BLOG.appearance}>
         {showChrome && <Header
           navBarTitle={pageProps.post ? pageProps.post.title : null}
           fullWidth={pageProps.post ? pageProps.post.fullWidth : false}

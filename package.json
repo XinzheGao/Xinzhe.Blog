@@ -1,15 +1,15 @@
 {
-  "name": "notionic",
+  "name": "xinzhe-blog",
   "version": "3.0.0",
   "engines": {
     "node": "24.x"
   },
   "packageManager": "pnpm@7.33.7",
-  "homepage": "https://zuolan.me",
+  "homepage": "https://xinzhe.dev",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/izuolan/notionic.git"
+    "url": "https://github.com/XinzheGao/Xinzhe.Blog.git"
   },
   "author": {
     "name": "Zuo Lan",
@@ -60,7 +60,6 @@
     "typescript": "^5.0.3"
   },
   "bugs": {
-    "url": "https://github.com/izuolan/notionic/issues",
-    "email": "i@zuolan.me"
+    "url": "https://github.com/XinzheGao/Xinzhe.Blog/issues"
   }
 }
